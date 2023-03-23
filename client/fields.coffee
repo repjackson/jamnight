@@ -93,19 +93,6 @@ Template.html_edit.events
 Template.html_edit.helpers
         
 
-
-Template.color_icon_edit.events
-    'blur .color_icon': (e,t)->
-        val = t.$('.color_icon').val()
-        parent = Template.parentData()
-        doc = Docs.findOne parent._id
-        if doc
-            Docs.update parent._id,
-                $set:"#{@key}":val
-
-
-
-
 Template.clear_value.events
     'click .clear_value': ->
         if confirm "Clear #{@title} field?"

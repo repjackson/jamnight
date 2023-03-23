@@ -90,32 +90,12 @@ template(name='html_edit')
         .field.testsun
             textarea#sample.sun-editor-editable
                 |#{field_value}
-    +call_watson mode='html' key='body'
     //- div
     //- //- +tone mode='html'
-    if watson
-        +watson_view
 
 
 
 
-template(name='color_icon_edit')
-    div
-    .ui.inline.header
-        if title
-            |#{title}
-        else if key
-            |#{key}
-        else
-            |#{this}
-    .ui.input
-        input.color_icon(type='url' value=field_value placeholder='icons8 class' autocomplete="off")
-    if field_value
-        //- i.large.icon(class=field_value)
-        //- img.ui.inline.image(src="https://img.icons8.com/fluent/48/000000/#{field_value}.png")
-        //- img.ui.inline.image(src="https://img.icons8.com/dusk/48/000000/#{field_value}.png")
-        img.ui.inline.image(src="https://img.icons8.com/color/48/000000/#{field_value}.png")
-        //- img.ui.inline.image(src="https://img.icons8.com/office/48/000000/#{field_value}.png")
 template(name='icon_edit')
     div
     if icon
@@ -293,8 +273,6 @@ template(name='image_edit')
                 //     |autotag
             else
                 input(type='file' name='upload_image' accept='image/*' )
-                .ui.big.button.upload_image 
-                    |upload
                 // input(type='file' name='upload_image' accept='image/*' )
             
 

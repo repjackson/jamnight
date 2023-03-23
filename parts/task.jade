@@ -1,0 +1,127 @@
+template(name='tasks')
+    .ui.stackable.padded.grid 
+        .sixteen.wide.column
+            .ui.inline.header 
+                +i name='blog'
+                |tasks
+                if currentUser
+                    .ui.icon.button.add_task
+                        i.plus.large.icon
+            .ui.compact.button.toggle_yours
+                if viewing_yours
+                    i.undo.green.icon
+                else
+                    i.circle.outline.icon
+                |yours
+
+            each picked_tags
+                a.ui.blue.button.unpick_task_tag
+                    |#{this}
+            each tag_results
+                // if title
+                a.ui.compact.button.pick_task_tag
+                    |#{title} 
+                    // small.ui.grey.text #{count}
+        .sixteen.wide.column.scrollin
+            .ui.centered.stackable.doubling.four.cards
+                each task_docs 
+                    +task_card
+                    
+
+template(name='task_card')
+    .ui.card.view_task.pointer.fly_right
+        img.ui.fluid.rounded.image(src="{{c.url image_id height=200 width=400 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+        .content
+            a.ui.header(href="/task/#{_id}") #{title}
+            if private 
+                i.large.lock.icon
+            // .ui.small.grey.header #{when}
+            // .smallscroll
+            | !{body}
+            // +comments_view_small
+            // +author_info
+            +boolean_edit key='completed' label='completed'
+            .ui.label
+                |#{credit_bounty} credits
+            .ui.label
+                |#{slot_amount} slots
+        
+
+template(name='task_view')
+    with current_doc
+        .ui.stackable.padded.grid
+            .row 
+                .four.wide.column
+                    a.ui.circular.icon.button(href="/tasks" title='tasks')
+                        i.chevron.left.icon
+                        +i name='task'
+                        |tasks
+                    .ui.inline.grey.header {{from_now start_datetime}}
+                    
+                    if can_edit
+                        a.ui.circular.icon.button.edit_task(href="/task/#{_id}/edit" title='edit')
+                            +i name='pencil'
+                    .ui.segment
+                        .ui.header 
+                            small author
+                        a.ui.header(href="/user/#{_author.username}") 
+                            img.ui.avatar.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                            |#{_author.username}
+                    .ui.list
+                        .item #{views} views
+                    each viewers
+                        .ui.label #{username
+                    +array_view key='tags' label='tags'  
+                    +voting_full
+                    .ui.big.label
+                        |#{credit_bounty} credits
+                    .ui.big.label
+                        |#{slot_amount} slots
+
+                .eight.wide.column.scrollin
+                    .ui.header #{title}
+                    img.ui.rounded.image(src="{{c.url image_id }}" class=currentUser.invert_class)
+                    // a.ui.header(href="/user/#{target.username}")
+                    //     |#{target.username}
+                    |!{content}
+                    div 
+                    .spacer
+                    .spacer
+                    +comments
+                .four.wide.column
+                    +boolean_edit key='completed' label='completed'
+                    +single_user_edit key='assigned_id' label='assigned to'
+                    .ui.fluid.green.button.submit
+                        i.checkmark.icon
+                        |submit
+
+
+
+
+
+template(name='task_edit')
+    with current_doc
+        .ui.stackable.padded.grid
+            .two.column.row 
+                .column
+                    .ui.inline.header 
+                        +icolor name='pencil' cl='ui image inline pointer'
+                        |edit task
+                    a.ui.icon.green.big.button(href="/task/#{_id}/" title='save')
+                        i.checkmark.big.icon
+                    +text_edit key='title' label='title'  
+                    +html_edit key='body' label='description'  
+                .column
+                    i.large.link.red.remove.circular.icon.delete_task
+                    +image_edit key='image_id' label='image'  
+                    div 
+                    +array_edit key='tags' label='tags' icon='tags'
+                    // +boolean_edit key='published' icon='visible'  
+                    // if in_dev 
+                    //     +text_edit key='model' label='model'  
+                    div
+                    +number_edit key='slot_amount' label='slots'
+                    div
+                    +number_edit key='credit_bounty' label='credit bounty'
+                    
+                    

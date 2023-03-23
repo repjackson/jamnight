@@ -103,13 +103,6 @@ if Meteor.isClient
     #                 profile_ids:[@_id]
     #         Router.go "/recipe/#{new_id}/edit"
 
-    Template.favorite_icon_toggle.helpers
-        icon_class: ->
-            if @favorite_ids and Meteor.userId() in @favorite_ids
-                'red'
-            else
-                'outline'
-    
     Template.profile_edit.events
         'click .delete_profile': ->
             Swal.fire({

@@ -1,5 +1,5 @@
 head
-    title konnect
+    title jam night
     meta(name='viewport', content='user-scalable=yes, initial-scale=1.0, maximum-scale=1.5, width=device-width')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
@@ -45,9 +45,17 @@ template(name='nav')
         //         i.big.loading.grey.refresh.icon.cancel
         // else 
         a.header.item.zoomer(href='/' class="{{isActivePath '/'}}" )
-            +icolor name='groups'
+            +icolor name='music'
             // img(src='/android-chrome-192x192.png')
-            strong.mobile.hidden konnect
+            strong.mobile.hidden jam night
+        a.header.item.zoomer(href='/tasks' class="{{isActivePath '/tasks'}}" )
+            +icolor name='tasks'
+            // img(src='/android-chrome-192x192.png')
+            strong.mobile.hidden tasks
+        a.header.item.zoomer(href='/events' class="{{isActivePath '/events'}}" )
+            +icolor name='calendar'
+            // img(src='/android-chrome-192x192.png')
+            strong.mobile.hidden events
         a.icon.item.invert_toggle(title='dark mode')
             +i name='light'
         // // .icon.item 
@@ -139,8 +147,35 @@ template(name='mlayout')
 
 
 template(name='home')
-    .ui.centered.four.column.padded.stackable.grid 
+    .ui.centered.padded.stackable.grid 
         .center.aligned.row
+            .ten.wide.center.aligned.column 
+                .ui.header welcome to jamnight
+                .ui.fluid.button sign in
+                .ui.large.fluid.input
+                    input(type='text' placeholder='name')
+                each users 
+                    .ui.button.pick_user 
+                        |#{username}
+                .ui.big.circular.button
+                    |audience
+                .ui.big.circular.button
+                    |musician
+                div
+                .ui.big.circular.button
+                    |bass
+                .ui.big.circular.button
+                    |guitar
+                .ui.big.circular.button
+                    |drums
+                .ui.big.circular.button
+                    |piano
+                .ui.big.circular.button
+                    |singer
+                .ui.big.circular.button
+                    |volunteer
+                .ui.big.fluid.green.button 
+                    |sign in
             each home_docs
                 .column 
                     a.ui.fluid.card(href="/#{route}")
