@@ -1,22 +1,10 @@
 if Meteor.isClient
     Template.nav.onCreated ->
         @autorun => Meteor.subscribe 'me', ->
-        # @autorun => Meteor.subscribe 'all_users', ->
+        @autorun => Meteor.subscribe 'all_users',->
+        @autorun => Meteor.subscribe 'model_docs','task',->
         # @autorun => Meteor.subscribe 'models', ->
         
-        @autorun => Meteor.subscribe 'model_count', 'post', ->
-        @autorun => Meteor.subscribe 'model_count', 'task', ->
-        @autorun => Meteor.subscribe 'model_count', 'rental', ->
-        @autorun => Meteor.subscribe 'model_count', 'profile', ->
-        @autorun => Meteor.subscribe 'model_count', 'product', ->
-        @autorun => Meteor.subscribe 'model_count', 'group', ->
-        @autorun => Meteor.subscribe 'model_count', 'event', ->
-        @autorun => Meteor.subscribe 'model_count', 'transfer', ->
-        @autorun => Meteor.subscribe 'user_count', ->
-        # @autorun => Meteor.subscribe 'my_unread_messages'
-        # @autorun => Meteor.subscribe 'global_stats'
-        # @autorun => Meteor.subscribe 'my_cart_order'
-        # @autorun => Meteor.subscribe 'my_cart_products'
 
     Template.nav.onRendered ->
         Meteor.setTimeout ->
@@ -24,7 +12,6 @@ if Meteor.isClient
                 .popup()
         , 5000
                 
-    
     Template.nav.events
         'click .reset': ->
             # model_slug =  Router.current().params.model_slug
@@ -90,16 +77,7 @@ if Meteor.isClient
             
         'click .clear_tags': -> picked_tags.clear()
     
-    
     Template.nav.helpers
-        event_counter: -> Counts.get('event_counter')
-        post_counter: -> Counts.get('post_counter')
-        profile_counter: -> Counts.get('profile_counter')
-        user_counter: -> Counts.get('user_count')
-        group_counter: -> Counts.get('group_counter')
-        task_counter: -> Counts.get('task_counter')
-        transfer_counter: -> Counts.get('transfer_counter')
-        rental_counter: -> Counts.get('rental_counter')
         product_counter: -> Counts.get('product_counter')
         
         current_product_search: -> Session.get('product_query')
@@ -140,26 +118,11 @@ if Meteor.isClient
     Template.nav.events
         'mouseenter a': (e,t)-> $(e.currentTarget).closest('a').transition('pulse', '1000')
         'mouseenter a': (e,t)-> $(e.currentTarget).closest('a').transition('pulse', '1000')
-    # Template.secnav.events
-    #     'mouseenter .item': (e,t)-> $(e.currentTarget).closest('.item').transition('pulse', '1000')
-    #     'click .menu_dropdown': ->
-    #         $('.menu_dropdown').dropdown(
-    #             on:'hover'
-    #         )
-
-    #     'click #logout': ->
-    #         Session.set 'logging_out', true
-    #         Meteor.logout ->
-    #             Session.set 'logging_out', false
-    #             Router.go '/'
-
-
-    Template.nav.helpers
 
 if Meteor.isServer
-    Meteor.publish 'models', ->
+    Meteor.publish 'model_docs',(model)->
         Docs.find 
-            model:'model'
+            model:model
     Meteor.publish 'my_cart', ->
         Docs.find 
             model:'cart_item'

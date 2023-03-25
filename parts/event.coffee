@@ -18,10 +18,6 @@ if Meteor.isClient
         # })
         
         # calendar.render()
-
-    
-
-
     @picked_event_tags = new ReactiveArray []
 
     Router.route '/event/:doc_id', (->
@@ -129,6 +125,7 @@ if Meteor.isClient
     Template.event_view.onCreated ->
         @autorun => @subscribe 'groups_by_event_id',Router.current().params.doc_id, ->
         @autorun => @subscribe 'group_members',Router.current().params.doc_id, ->
+        @autorun => @subscribe 'event_tasks',Router.current().params.doc_id, ->
         @autorun => @subscribe 'related_groups',Router.current().params.doc_id, ->
     Template.rsvp.onCreated ->
         @autorun => @subscribe 'event_tickets',Router.current().params.doc_id, ->
@@ -136,6 +133,10 @@ if Meteor.isServer
     Meteor.publish 'event_tickets', (event_id)->
         Docs.find 
             model:'order'
+            event_id:event_id
+    Meteor.publish 'event_tasks', (event_id)->
+        Docs.find 
+            model:'task_instance'
             event_id:event_id
 
 if Meteor.isClient  
@@ -147,7 +148,6 @@ if Meteor.isClient
                 ticket:true
                 event_id:@_id
                 ticket_price: @point_price
-        
     Template.rsvp.helpers
         event_ticket_docs: ->
             Docs.find
@@ -162,18 +162,17 @@ if Meteor.isClient
             console.log 'hi'
             Session.set(@key,@value)
             
-            
     Template.events.events
         'click .pick_tag': -> picked_tags.push @title
         'click .pick_flat_tag': -> picked_tags.push @valueOf()
         'click .unpick_tag': -> picked_tags.remove @valueOf()
         'click .toggle_past': ->
             Session.set('viewing_past', !Session.get('viewing_past'))
-        'click .select_room': ->
-            if Session.equals('viewing_room_id', @_id)
-                Session.set('viewing_room_id', null)
-            else
-                Session.set('viewing_room_id', @_id)
+        # 'click .select_room': ->
+        #     if Session.equals('viewing_room_id', @_id)
+        #         Session.set('viewing_room_id', null)
+        #     else
+        #         Session.set('viewing_room_id', @_id)
         'click .add_event': ->
             new_id = 
                 Docs.insert 
@@ -271,26 +270,6 @@ if Meteor.isClient
     
 
 if Meteor.isServer
-    Meteor.publish 'groups_by_event_id', (event_id)->
-        @unblock()
-        event = Docs.findOne event_id
-        if event
-            Docs.find {
-                model:'group'
-                _id:$in:event.group_ids
-            }
-            
-    Meteor.publish 'related_groups', (doc_id)->
-        @unblock()
-        doc = Docs.findOne doc_id
-        if doc
-            Docs.find {
-                model:'group'
-                _id:$in:doc.group_ids
-            }
-            
-            
-            
     Meteor.publish 'future_events', ()->
         @unblock()
         console.log moment().subtract(1,'days').format("YYYY-MM-DD")
@@ -301,74 +280,6 @@ if Meteor.isServer
         }, 
             sort:date:1
     
-    # Meteor.publish 'events', (
-    #     viewing_room_id
-    #     viewing_past
-    #     viewing_published
-    #     )->
-    #     @unblock()
-            
-    #     match = {model:'event'}
-    #     if viewing_room_id
-    #         match.room_id = viewing_room_id
-    #     if viewing_past
-    #         match.date = $gt:moment().subtract(1,'days').format("YYYY-MM-DD")
-            
-    #     match.published = viewing_published    
-            
-    #     console.log moment().subtract(1,'days').format("YYYY-MM-DD")
-    #     Docs.find match, 
-    #         sort:date:1
-            
-            
-    # Meteor.publish 'event_tags', (picked_tags)->
-    #     @unblock()
-    #     # user = Meteor.users.findOne @userId
-    #     # current_herd = user.user.current_herd
-    
-    #     self = @
-    #     match = {model:'event'}
-    
-    #     # picked_tags.push current_herd
-    #     if picked_tags.length > 0
-    #         match.tags = $all: picked_tags
-    
-    #     tag_cloud = Docs.aggregate [
-    #         { $match: match }
-    #         { $project: tags: 1 }
-    #         { $unwind: "$tags" }
-    #         { $group: _id: '$tags', count: $sum: 1 }
-    #         { $match: _id: $nin: picked_tags }
-    #         { $sort: count: -1, _id: 1 }
-    #         { $limit: 10 }
-    #         { $project: _id: 0, name: '$_id', count: 1 }
-    #         ]
-    #     tag_cloud.forEach (tag, i) ->
-    #         self.added 'results', Random.id(),
-    #             name: tag.name
-    #             count: tag.count
-    #             model:'event_tag'
-    #             index: i
-                
-    #     group_cloud = Docs.aggregate [
-    #         { $match: match }
-    #         { $project: group_title: 1 }
-    #         # { $unwind: "$group_title" }
-    #         { $group: _id: '$group_title', count: $sum: 1 }
-    #         { $match: _id: $nin: picked_tags }
-    #         { $sort: count: -1, _id: 1 }
-    #         { $limit: 20 }
-    #         { $project: _id: 0, name: '$_id', count: 1 }
-    #         ]
-    #     group_cloud.forEach (tag, i) ->
-    #         self.added 'results', Random.id(),
-    #             name: tag.name
-    #             count: tag.count
-    #             model:'group_tag'
-    #             index: i
-    
-    #     self.ready()
-
     Meteor.publish 'event_results', (
         picked_tags
         viewing_past=false
@@ -516,30 +427,6 @@ if Meteor.isServer
     #         _id:doc._author_id
 
 
-#     Meteor.methods
-        # send_event: (event_id)->
-        #     event = Docs.findOne event_id
-        #     target = Meteor.users.findOne event.recipient_id
-        #     gifter = Meteor.users.findOne event._author_id
-        #
-        #     console.log 'sending event', event
-        #     Meteor.users.update target._id,
-        #         $inc:
-        #             points: event.amount
-        #     Meteor.users.update gifter._id,
-        #         $inc:
-        #             points: -event.amount
-        #     Docs.update event_id,
-        #         $set:
-        #             submitted:true
-        #             submitted_timestamp:Date.now()
-        #
-        #
-        #
-        #     Docs.update Router.current().params.doc_id,
-        #         $set:
-        #             submitted:true
-
 
  if Meteor.isClient
     Template.registerHelper 'ticket_event', () ->
@@ -577,21 +464,15 @@ if Meteor.isServer
             #         )
             # )_
 
-
-
 if Meteor.isServer
     Meteor.publish 'event_from_ticket_id', (ticket_id)->
         ticket = Docs.findOne ticket_id
         Docs.find 
             _id:ticket.event_id
-            
-            
     Meteor.publish 'group', (ticket_id)->
         ticket = Docs.findOne ticket_id
         Docs.find 
             _id:ticket.event_id
-            
-            
     Meteor.methods
         remove_reservation: (doc_id)->
             Docs.remove doc_id
@@ -649,9 +530,23 @@ if Meteor.isClient
     Template.event_view.helpers 
         can_buy: ->
             now = Date.now()
-            
-
+        _task: ->
+            Docs.findOne 
+                _id:@task_id
+        task_instance: ->
+            Docs.findOne 
+                model:'task_instance'
+                task_id:@_id
+                event_id:Router.current().params.doc_id
+                
     Template.event_view.events
+        'click .generate_task': ->
+            # console.log @
+            Docs.insert 
+                model:'task_instance'
+                event_id:Router.current().params.doc_id
+                task_id:@_id
+            $('body').toast(message:'task created')
         'click .buy_for_points': (e,t)->
             val = parseInt $('.point_input').val()
             Session.set('point_paying',val)
@@ -751,10 +646,6 @@ if Meteor.isClient
                     #     'success'
                     # )
             )
-
-
-
-
     
     Template.attendance.events
         'click .mark_maybe': -> Meteor.call 'mark_maybe', @_id, ->
@@ -834,11 +725,11 @@ if Meteor.isClient
         ), name:'event_edit'
 
     Template.event_edit.onCreated ->
-        @autorun => Meteor.subscribe 'doc_by_id', Router.current().params.doc_id
-        @autorun => Meteor.subscribe 'model_docs', 'room_reservation'
+        @autorun => Meteor.subscribe 'doc_by_id', Router.current().params.doc_id, ->
+        @autorun => Meteor.subscribe 'model_docs', 'room_reservation', ->
     Template.event_edit.onRendered ->
     Template.event_edit.onCreated ->
-        @autorun => Meteor.subscribe 'model_docs', 'room'
+        @autorun => Meteor.subscribe 'model_docs', 'room', ->
     Template.event_edit.helpers
         rooms: ->
             Docs.find   

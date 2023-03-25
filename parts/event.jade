@@ -494,8 +494,19 @@ template(name='event_view')
                     // div 
                     // .spacer
                     // .spacer
+                    .ui.header
+                        +i name='tasks'
+                        |task templates
+                    .ui.list 
+                        each model_docs_helper 'task' 
+                            .item #{title}
+                            unless task_instance
+                                .ui.button.generate_task 
+                                    |generate 
+                            with task_instance
+                                .ui.header #{_task.title}
+                            
                 .four.wide.column.scrollin
-                    +group_widget
                     if link 
                         a.ui.big.basic.fluid.compact.button(href=link target='_window' title=link)
                             i.external.icon
@@ -536,7 +547,7 @@ template(name='event_view')
                             |#{support.name}
                     +comments
                 .four.wide.column.scrolling
-                    +rsvp
+                    // +rsvp
                     if max_attendees
                         .ui.header
                             |#{max_attendees} max attendees
@@ -546,8 +557,8 @@ template(name='event_view')
                     .ui.small.header #{views} views
                     each viewers
                         .ui.label #{username}
-                    with current_doc
-                        +gcal_button
+                    // with current_doc
+                    //     +gcal_button
                     .ui.hidden.divider
                     +array_view key='tags' label='tags' icon='tags'  
                     div
@@ -562,17 +573,6 @@ template(name='event_view')
 template(name='location_map')
     iframe(width='100%' height='350' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src="https://maps.google.com/maps?&amp;q=#{location}&amp;output=embed")
 
-template(name='group_widget')
-    if current_doc.group_ids.length
-        .ui.header 
-            +i name='campfire'
-            |associated groups
-        each related_groups
-            a.ui.card.fly_right(href="/group/#{_id}")
-                img.ui.image(src="{{c.url image_id width=500 height=500}}")
-                .content
-                    .ui.header 
-                        |#{title}
 
 template(name='event_edit')
     with current_doc
@@ -598,65 +598,60 @@ template(name='event_edit')
                     //     .ui.header date: #{date}
                     //     .ui.header time: #{time}
                     // else
-                    +text_edit key='location' label='location' icon='marker'  
+                    // +text_edit key='location' label='location' icon='marker'  
                     // +time_edit key='time' label='time'  
-                    +number_edit key='hour_duration' label='hours'  
+                    // +number_edit key='hour_duration' label='hours'  
                     // +range_edit label='time range'  
                     // +single_user_edit key='facilitator_id' label='facilitator' icon='chess king'  
                 .column
-                    unless is_repeating 
-                        +datetime_edit key='start_datetime' label='start datetime'  
-                        +datetime_edit key='end_datetime' label='end datetime'  
-                    .ui.segment
-                        +boolean_edit key='is_repeating' label='repeating' icon='refresh'  
-                        if is_repeating
-                            div
-                            .ui.inline.header repeating day
-                            +key_value_edit key='repeating_day' value='monday'
-                            +key_value_edit key='repeating_day' value='tuesday'
-                            +key_value_edit key='repeating_day' value='wednesday'
-                            +key_value_edit key='repeating_day' value='thursday'
-                            +key_value_edit key='repeating_day' value='friday'
-                            +key_value_edit key='repeating_day' value='saturday'
-                            +key_value_edit key='repeating_day' value='sunday'
-                            div
-                            +time_edit key='start_time' label='start time'  
-                            +time_edit key='end_time' label='end time'  
-                    // +boolean_edit key='has_host' label='has host' icon='king'  
-                    // if has_host
+                    // unless is_repeating 
+                    +datetime_edit key='start_datetime' label='start datetime'  
+                    +datetime_edit key='end_datetime' label='end datetime'  
+                    // .ui.segment
+                    //     +boolean_edit key='is_repeating' label='repeating' icon='refresh'  
+                    //     if is_repeating
+                    //         div
+                    //         .ui.inline.header repeating day
+                    //         +key_value_edit key='repeating_day' value='monday'
+                    //         +key_value_edit key='repeating_day' value='tuesday'
+                    //         +key_value_edit key='repeating_day' value='wednesday'
+                    //         +key_value_edit key='repeating_day' value='thursday'
+                    //         +key_value_edit key='repeating_day' value='friday'
+                    //         +key_value_edit key='repeating_day' value='saturday'
+                    //         +key_value_edit key='repeating_day' value='sunday'
+                    //         div
+                    //         +time_edit key='start_time' label='start time'  
+                    //         +time_edit key='end_time' label='end time'  
                     +single_user_edit key='host_id' label='host' icon='king'  
-                    // +boolean_edit key='has_support' label='has support' icon='king'  
-                    // if has_support
                     +single_user_edit key='support_id' label='support' icon='helping'  
-                    +multi_user_edit key='going_user_ids' label='going users' icon='event-accepted'  
-                    +multi_user_edit key='maybe_user_ids' label='maybe going' icon='event-accepted-tentatively'  
-                    +multi_user_edit key='not_user_ids' label='not going' icon='event-declined'  
+                    // +multi_user_edit key='going_user_ids' label='going users' icon='event-accepted'  
+                    // +multi_user_edit key='maybe_user_ids' label='maybe going' icon='event-accepted-tentatively'  
+                    // +multi_user_edit key='not_user_ids' label='not going' icon='event-declined'  
                     div 
                 .column
                     +array_edit key='tags' label='tags' icon='tags'  
-                    .ui.segment
-                        +boolean_edit key='has_tickets' label='has tickets' icon='ticket'  
-                        if has_tickets
-                            +boolean_edit key='external_ticket_management' label='externally handled'  
-                            if external_ticket_management
-                                +link_edit key='link' label='link'
-                                // +link_edit key='link' label='link'
-                            else
-                                +boolean_edit key='free' label='free'  
-                                unless free
-                                    +number_edit key='price_points' label='point price' min='0' max='100'  
-                                +number_edit key='price_usd' label='dollar price' min='0' max='100'  
+                    // .ui.segment
+                    //     +boolean_edit key='has_tickets' label='has tickets' icon='ticket'  
+                    //     if has_tickets
+                    //         +boolean_edit key='external_ticket_management' label='externally handled'  
+                    //         if external_ticket_management
+                    //             +link_edit key='link' label='link'
+                    //         else
+                    //             +boolean_edit key='free' label='free'  
+                    //             unless free
+                    //                 +number_edit key='price_points' label='point price' min='0' max='100'  
+                    //             +number_edit key='price_usd' label='dollar price' min='0' max='100'  
                 .column
-                    .ui.segment
-                        +boolean_edit key='manage_attendance' label='manage attendance' icon='settings'  
-                        if manage_attendance
-                            .ui.header
-                                i.users.icon
-                                |audience
-                            +number_edit key='max_attendees' label='max attendees' min='0' max='100'  
-                            +boolean_edit key='friends_only' label='friends only' icon='campfire'  
-                            // div
+                    // .ui.segment
+                    //     +boolean_edit key='manage_attendance' label='manage attendance' icon='settings'  
+                    //     if manage_attendance
+                    //         .ui.header
+                    //             i.users.icon
+                    //             |audience
+                    //         +number_edit key='max_attendees' label='max attendees' min='0' max='100'  
+                    //         +boolean_edit key='friends_only' label='friends only' icon='campfire'  
+                    //         // div
                     +html_edit key='body' label='description'  
                     +link_edit key='link' label='link'
-                    +group_picker
+                    // +group_picker
                     

@@ -7,6 +7,9 @@ Template.registerHelper 'is_in_past', () ->
     moment().isSameOrAfter(moment(@start_datetime))
 
 
+Template.registerHelper 'task_docs', (input)->
+    Docs.find
+        model:'task'
 Template.registerHelper 'cut', (input)->
     input[..10]
 
