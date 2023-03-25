@@ -120,9 +120,6 @@ if Meteor.isClient
         'mouseenter a': (e,t)-> $(e.currentTarget).closest('a').transition('pulse', '1000')
 
 if Meteor.isServer
-    Meteor.publish 'model_docs',(model)->
-        Docs.find 
-            model:model
     Meteor.publish 'my_cart', ->
         Docs.find 
             model:'cart_item'

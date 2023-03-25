@@ -52,6 +52,10 @@ template(name='nav')
             +icolor name='tasks'
             // img(src='/android-chrome-192x192.png')
             strong.mobile.hidden tasks
+        a.header.item.zoomer(href='/users' class="{{isActivePath '/users'}}" )
+            +icolor name='groups'
+            // img(src='/android-chrome-192x192.png')
+            strong.mobile.hidden people
         a.header.item.zoomer(href='/events' class="{{isActivePath '/events'}}" )
             +icolor name='calendar'
             // img(src='/android-chrome-192x192.png')

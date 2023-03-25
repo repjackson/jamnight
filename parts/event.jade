@@ -66,23 +66,19 @@ template(name='events')
                     +session_set key='sort_key' value='price' label='price' icon='money'
                 .spacer
                 if subs_ready
-                    if session_is 'view_mode' 'grid'
-                        if one_event_result
-                            .ui.stackable.one.cards.scrolling
-                                each event_docs
-                                    +event_card
-                        else if two_event_results
-                            .ui.stackable.two.cards.scrolling
-                                each event_docs
-                                    +event_card
-                        else
-                            .ui.stackable.centered.cards.scrolling
-                                each event_docs
-                                    +event_card
-                    if session_is 'view_mode' 'list'
-                        .ui.selection.divided.animated.list.scrolling
-                            each event_docs 
-                                +event_item
+                    // if session_is 'view_mode' 'grid'
+                    // if one_event_result
+                    //     .ui.stackable.one.cards.scrolling
+                    //         each event_docs
+                    //             +event_card
+                    // else if two_event_results
+                    //     .ui.stackable.two.cards.scrolling
+                    //         each event_docs
+                    //             +event_card
+                    // else
+                    .ui.stackable.centered.four.cards
+                        each event_docs
+                            +event_card
                 else 
                     .ui.center.aligned.basic.segment
                         i.massive.loading.calendar.grey.icon
@@ -93,7 +89,7 @@ template(name='session_icon_button')
         +i name=icon
 
 template(name='event_card')
-    .ui.zoomer.card
+    .ui.card
         .content
             a.ui.inline.header.fly_right(href="/event/#{_id}") #{title} 
             div
@@ -483,7 +479,7 @@ template(name='event_view')
                     //         i.globe.icon 
                     //         |#{link}
             .row
-                .eight.wide.column.scrollin
+                .twelve.wide.column.scrollin
                     a(href="{{c.url image_id }}" target='_window')
                         img.ui.fluid.rounded.image.mobile_hidden(src="{{c.url image_id }}" class=currentUser.invert_class)
                         img.ui.small.inline.rounded.image.mobile.only(src="{{c.url image_id }}" class=currentUser.invert_class)
@@ -497,14 +493,18 @@ template(name='event_view')
                     .ui.header
                         +i name='tasks'
                         |task templates
-                    .ui.list 
+                    .ui.stackable.four.cards 
                         each model_docs_helper 'task' 
-                            .item #{title}
-                            unless task_instance
-                                .ui.button.generate_task 
-                                    |generate 
-                            with task_instance
-                                .ui.header #{_task.title}
+                            .card 
+                                img.ui.rounded.image(src="{{c.url image_id }}" class=currentUser.invert_class)
+                                .content
+                                    |#{title}
+                                    unless task_instance
+                                        .ui.button.generate_task 
+                                            |generate 
+                                    with task_instance
+                                        .ui.header #{_task.title}
+                                        +single_user_edit key='assigned_user_id' label='assigned to'
                             
                 .four.wide.column.scrollin
                     if link 
@@ -546,7 +546,6 @@ template(name='event_view')
                             img.ui.avatar.image(src="{{c.url support.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
                             |#{support.name}
                     +comments
-                .four.wide.column.scrolling
                     // +rsvp
                     if max_attendees
                         .ui.header
