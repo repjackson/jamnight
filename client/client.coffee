@@ -6,8 +6,25 @@
 
 Template.home.onCreated ->
     Meteor.subscribe 'model_docs','checkin', ->
+    Meteor.subscribe 'model_docs','task', ->
+    Meteor.subscribe 'model_docs','all_users', ->
 
 Template.home.events
+    'click .complete_checkin': ->
+        Docs.update Session.get('current_checkin_id'),
+            $set:
+                complete:true 
+        Session.set('current_checkin_id',null)
+        $('body').toast(
+            showIcon: 'checkmark'
+            message: "saved"
+            showProgress: 'bottom'
+            class: 'success'
+            # displayTime: 'auto',
+            position: "bottom center"
+        )
+
+        
     'click .cancel_checkin': ->
         Docs.remove Session.get('current_checkin_id')
     'click .new_checkin': ->
@@ -15,7 +32,45 @@ Template.home.events
             Docs.insert 
                 model:'checkin'
         Session.set('current_checkin_id',new_id)
-Template.home.helpers 
+    'click .pick_task': ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if @_id in cd.task_ids
+            Docs.update Session.get('current_checkin_id'),
+                $pull:
+                    task_ids:@_id 
+        else             
+            Docs.update Session.get('current_checkin_id'),
+                $addToSet:
+                    task_ids:@_id 
+    'click .pick_user': ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if @_id is cd.user_id
+            Docs.update Session.get('current_checkin_id'),
+                $unset:user_id:1 
+        else             
+            Docs.update Session.get('current_checkin_id'),
+                $set:user_id:@_id 
+        
+Template.home.helpers
+    task_class: ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if @_id in cd.task_ids then 'blue' else 'basic compact'
+    user_class: ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if @_id is cd.user_id then 'blue' else 'basic compact'
+    can_complete: ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if cd.checkin_type
+            if cd.checkin_type is 'audience'
+                true
+            else if cd.checkin_type is 'musician'
+                if cd.musician_type
+                    true 
+            else if cd.checkin_type is 'volunteer'
+                if cd.task_ids.length>0
+                    true
+    user_docs: ->
+        Meteor.users.find()
     current_checkin: ->
         Docs.findOne 
             _id:Session.get('current_checkin_id')

@@ -113,55 +113,61 @@ template(name='layout')
 template(name='home')
     .ui.centered.padded.stackable.grid 
         .center.aligned.row
-            .ten.wide.center.aligned.column 
-                .ui.header 
-                    +i name='music-band'                
-                    |welcome to jam night
+            .sixteen.wide.center.aligned.column 
                 unless current_checkin
-                    .ui.fluid.large.green.button.new_checkin 
+                    .ui.header 
+                        +i name='music-band'                
+                        |welcome to jam night
+                    .ui.fluid.large.green.basic.button.new_checkin 
                         +i name='checkmark'
-                        |check in
+                        |new check in
                 with current_checkin
                     .ui.large.fluid.basic.circular.red.button.cancel_checkin
                         +i name='cancel'
                         |cancel checkin
-                    .ui.large.fluid.input
-                        input(type='text' placeholder='name')
-                    each users 
-                        .ui.button.pick_user 
+                    // .ui.large.fluid.input
+                    //     input(type='text' placeholder='name')
+                    .ui.inline.header 
+                        +i name='groups'
+                        |pick user
+                    each user_docs
+                        .ui.big.circular.button.pick_user(class=user_class)
+                            img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
                             |#{username}
-                    .ui.big.circular.button
-                        +i name='audience'
-                        |audience
-                    .ui.big.circular.button
-                        +i name='music'
-                        |musician
-                    .ui.big.circular.button
-                        +i name='volunteering'
-                        |volunteer
                     div
-                    .ui.big.circular.button
-                        +i name='guitar-strings'
-                        |bass
-                    .ui.big.circular.button
-                        +i name='guitar'
-                        |guitar
-                    .ui.big.circular.button
-                        +i name='drum-set'
-                        |drums
-                    .ui.big.circular.button
-                        +i name='piano'
-                        |piano
-                    .ui.big.circular.button
-                        +i name='concert'
-                        |singer
-                    .ui.big.fluid.green.button 
-                        |sign in
+                    .ui.inline.header 
+                        // +i name='groups'
+                        |pick type
+                    +kvs key='checkin_type' value='audience' icon='audience'
+                    +kvs key='checkin_type' value='musician' icon='music'
+                    +kvs key='checkin_type' value='volunteer' icon='volunteering'
+                    div
+                    if kve 'checkin_type' 'musician'
+                        .ui.inline.header pick instrument
+                        +kvs key='musician_type' value='bass' icon='guitar-strings'
+                        +kvs key='musician_type' value='guitar' icon='guitar'
+                        +kvs key='musician_type' value='drums' icon='drum-set'
+                        +kvs key='musician_type' value='piano' icon='piano'
+                        +kvs key='musician_type' value='singer' icon='concert'
+                        +kvs key='musician_type' value='other' icon='orchestra'
+                        // .ui.header pick slot
+                        
+                    
+                    if kve 'checkin_type' 'volunteer'
+                        .ui.header pick tasks 
+                        each model_docs_helper 'task'
+                            .ui.big.circular.button.pick_task(class=task_class)
+                                img.ui.tiny.inline.rounded.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                |#{title}
+                    if kve 'checkin_type' 'audience'
+                        .ui.header please see staff to purchase ticket
+                    .ui.hidden.divider
+                    if can_complete
+                        .ui.big.fluid.green.circular.button.complete_checkin
+                            +i name='checkmark'
+                            |complete check in
                         
                         
-                        
-            each user_docs
-                .ui.button #{username}
                 
                 
                 

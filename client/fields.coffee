@@ -424,7 +424,7 @@ Template.number_edit.events
 Template.kvs.helpers
     kve_class: ->
         parent = Template.parentData()
-        if parent["#{@key}"] is @value then 'active' else 'basic'
+        if parent["#{@key}"] is @value then 'blue' else 'basic compact'
 
 
 Template.kvs.events
