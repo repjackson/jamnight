@@ -43,7 +43,9 @@ template(name='nav')
                 i.big.loading.grey.refresh.icon.cancel
         // else 
         a.header.item.zoomer(href='/' class="{{isActivePath '/'}}" )
-            +icolor name='music'
+            +icolor name='music-band'
+            |&nbsp;
+            |&nbsp;
             // img(src='/android-chrome-192x192.png')
             strong.mobile.hidden jam night
         a.header.item.zoomer(href='/tasks' class="{{isActivePath '/tasks'}}" )
@@ -71,13 +73,13 @@ template(name='nav')
         //         input.global_search(type='text' autocomplete="off" value=current_searchs)
         .right.menu
             if currentUser
-                a.icon.item.add_post(title='add post')
-                    // i.large.plus.icon
-                    +i name='plus'
-                a.icon.item(href="/coin" class="{{isActiveRoute 'coin'}}" title='bank')
-                    // i.large.inbox.icon
-                    strong #{currentUser.coins}
-                    +i name='coins'
+                // a.icon.item.add_post(title='add post')
+                //     // i.large.plus.icon
+                //     +i name='plus'
+                // a.icon.item(href="/coin" class="{{isActiveRoute 'coin'}}" title='bank')
+                //     // i.large.inbox.icon
+                //     strong #{currentUser.coins}
+                //     +i name='coins'
                 a.item(href="/user/#{currentUser.username}" class="{{isActiveRoute 'user'}}" title='user')
                     if currentUser.image_id
                         img.ui.avatar.image(src="{{c.url currentUser.image_id width=200 height=200 gravity='face' crop='fill'}}")
@@ -86,6 +88,8 @@ template(name='nav')
                     strong #{currentUser.name}
                     +i name='star' cl='ui avatar image'
                     | #{currentUser.points}p
+                    +i name='coins'
+                    | #{currentUser.credit}c
             unless subs_ready
                 .icon.item
                     i.yin.yang.large.loading.icon
@@ -100,33 +104,18 @@ template(name='nav')
                 
     
 template(name='layout')
-    // img.ui.fluid.image.(src="{{c.url 'cafe'}}")
-    // img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")    
+    // img.ui.fluid.image.checkin_banner(src="{{c.url 'cafe'}}")
     +nav
-    // #main.ui.bottom.segment.attached.pushable
-        // +topbar
-        // +left_sidebar
-        // +right_sidebar
-        // .global_container
     +yield
-    // #ain_area.global_conainer.pusher
     if in_dev
         +footer
-
-
-template(name='mlayout')
-    .global_container(class=invert_class)
-        unless is_frontdesk
-            +nav
-        //- img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")    
-        +yield
 
 
 template(name='home')
     .ui.centered.padded.stackable.grid 
         .center.aligned.row
             .ten.wide.center.aligned.column 
-                .ui.header welcome to jamnight
+                .ui.header welcome to jam night
                 .ui.fluid.button sign in
                 .ui.large.fluid.input
                     input(type='text' placeholder='name')
@@ -134,32 +123,37 @@ template(name='home')
                     .ui.button.pick_user 
                         |#{username}
                 .ui.big.circular.button
+                    +i name='audience'
                     |audience
                 .ui.big.circular.button
+                    +i name='music'
                     |musician
+                .ui.big.circular.button
+                    +i name='volunteering'
+                    |volunteer
                 div
                 .ui.big.circular.button
+                    +i name='guitar-strings'
                     |bass
                 .ui.big.circular.button
+                    +i name='guitar'
                     |guitar
                 .ui.big.circular.button
+                    +i name='drum-set'
                     |drums
                 .ui.big.circular.button
+                    +i name='piano'
                     |piano
                 .ui.big.circular.button
+                    +i name='concert'
                     |singer
-                .ui.big.circular.button
-                    |volunteer
                 .ui.big.fluid.green.button 
                     |sign in
-            each home_docs
-                .column 
-                    a.ui.fluid.card(href="/#{route}")
-                        img.ui.image.zoomer(src="{{c.url image_id width=300 height=300 crop='fit'}}")    
-                        .content
-                            .header #{title}
-                            .description 
-                                |!{body}
+            each user_docs
+                .ui.button #{username}
+                
+                
+                
 template(name='not_found')
     .ui.center.aligned.padded.basic.segment
         +ibig name='park-bench' 
@@ -172,17 +166,6 @@ template(name='not_found')
             // i.undo.icon
             +i name='undo'
             |back
-
-
-template(name='shortcut_modal')
-    .ui.shortcut.modal
-        .ui.header keyboard shortcuts
-        .content
-            .ui.large.list
-                each shortcuts
-                    .item 
-                        .header #{combo}
-                        .content #{action}
 
 
 template(name='footer')

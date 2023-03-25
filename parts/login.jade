@@ -5,7 +5,7 @@ template(name='login')
                 // img.ui.image(src="{{c.url 'kitchen_logo' gravity='face' crop='fill'}}")
                 // img.ui.centered.image(src="https://nudefoodsmarket.com/wp-content/uploads/2021/03/logo-smaller-300x87.jpg")
                 .ui.center.aligned.header 
-                    +i name='yin-yang'
+                    +i name='music-band'
                     |login
                 .ui.inline.small.header 
                     +i name='user-male'
@@ -23,17 +23,17 @@ template(name='login')
                 //- if username
                 //- if logging_in
                 .ui.hidden.divider
-                .ui.fluid.big.button.enter(title="login #{username}" class=enter_class)
+                .ui.fluid.big.green.circular.button.enter(title="login #{username}" class=enter_class)
                     +i name='internal' cl='ui mini inline image'
                     |login
                     strong #{username}
                     //- i.right.chevron.icon
                 .ui.center.aligned.basic.segment    
-                    a.ui.compact.small.button(href='/forgot_password')
-                        +i name='forgot-password' cl='ui mini inline image'                    
-                        |forgot password
+                    // a.ui.compact.small.button(href='/forgot_password')
+                    //     +i name='forgot-password' cl='ui mini inline image'                    
+                    //     |forgot password
 
-                    a.ui.button(href='/register')
+                    a.ui.basic.circular.large.button(href='/register')
                         // i.plus.icon
                         +i name='plus'
                         |register
@@ -45,9 +45,9 @@ template(name='register')
             .ten.wide.column
                 // img.ui.centered.image(src="https://nudefoodsmarket.com/wp-content/uploads/2021/03/logo-smaller-300x87.jpg")
                 h1.ui.center.aligned.header
-                    // +i name='user-add'
-                    i.user.add.large.icon
-                    | one register
+                    +i name='music'
+                    // i.user.add.large.icon
+                    | jam night register
                 .ui.inline.small.header 
                     +i name='user-male'
                     |username
@@ -68,7 +68,7 @@ template(name='register')
                 .ui.hidden.divider
                 if can_register
                     //- if registering
-                    .ui.fluid.big.button.register(class=enter_class)
+                    .ui.fluid.big.green.button.register(class=enter_class)
                         i.user.plus.icon
                         |register
                 else
@@ -76,8 +76,8 @@ template(name='register')
                         i.user.plus.icon
                         |register
                     // // .ui.small.header username "#{username}" found
-                    
-                    a.ui.button(href='/login') 
-                        // i.right.chevron.icon
-                        +i name='internal' cl='ui avatar image'
-                        |login
+                .ui.horizontal.divider or
+                a.ui.green.basic.fluid.large.button(href='/login') 
+                    // i.right.chevron.icon
+                    +i name='internal' cl='ui avatar image'
+                    |login

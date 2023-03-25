@@ -19,38 +19,7 @@ template(name='youtube_view')
 
         //- // iframe(width='560' height='315' src="https://www.youtube.com/embed/#{field_value}" frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='')
         //- iframe(src="https://www.youtube.com/embed/#{field_value}" frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen='')
-template(name='color_edit')
-    .ui.large.form
-        .field
-            label 
-                if icon
-                    +i name=icon
-                    //- i.grey.icon(class=icon)
-                if title
-                    |#{title}
-                else if key
-                    |#{key}
-                else
-                    |#{this}
-            input.edit_color(type='color' value=field_value placeholder='color' autocomplete="off")
 
-
-
-template(name='color_view')
-    .ui.form
-        .field
-            label 
-                if icon
-                    //- +i name=icon
-                    i.grey.icon(class=icon)
-                if title
-                    |#{title}
-                else if key
-                    |#{key}
-                else
-                    |#{this}
-            .ui.large.label(style="background:#{field_value}")
-            |#{field_value}
 
 template(name='html_view')
     if field_value
@@ -380,12 +349,6 @@ template(name='text_edit')
         input.edit_text(type='text' value=field_value placeholder=placeholder autocomplete="off")
         
 
-
-
-
-
-
-
 template(name='clear_value')
     if field_value
         i.remove.link.large.icon.clear_value
@@ -406,11 +369,6 @@ template(name='text_view')
             else
                 |#{this}
         .ui.inline.header #{field_value}
-
-
-
-
-
 
 template(name='date_edit')
     div
@@ -754,7 +712,7 @@ template(name='boolean_view')
 template(name='number_edit')
     // div
         //- i.grey.icon(class=icon)
-    .ui.inline.small.header(title=tip)
+    .ui.small.header(title=tip)
         if icon
             // i.icon(class=icon)
             +i name=icon
@@ -1128,10 +1086,6 @@ template(name='multi_user_view')
             with user_from_id this
                 +user_item
                 // .spacer
-            
-
-
-    
     
 template(name='range_edit')
     .ui.form

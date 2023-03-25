@@ -20,17 +20,6 @@ Template.youtube_edit.events
 
 
 
-Template.color_edit.events
-    'blur .edit_color': (e,t)->
-        val = t.$('.edit_color').val()
-        parent = Template.parentData()
-        doc = Docs.findOne parent._id
-        if doc
-            Docs.update parent._id,
-                $set:"#{@key}":val
-
-
-
 Template.html_edit.onRendered ->
     @editor = SUNEDITOR.create((document.getElementById('sample') || 'sample'),{
     # 	"tabDisable": false
@@ -88,10 +77,6 @@ Template.html_edit.events
         else 
             Meteor.users.update parent._id,
                 $set:"#{@key}":html
-
-
-Template.html_edit.helpers
-        
 
 Template.clear_value.events
     'click .clear_value': ->
@@ -190,22 +175,6 @@ Template.time_edit.events
 # Template.ibig.helpers
 #     is_hovering: -> Template.instance().hovering.get()
 
-Template.icon_edit.events
-    'blur .icon_val': (e,t)->
-        val = t.$('.icon_val').val()
-        parent = Template.parentData()
-        doc = Docs.findOne parent._id
-        if doc
-            Docs.update parent._id,
-                $set:"#{@key}":val
-            $('body').toast(
-                showIcon: 'checkmark'
-                message: "saved"
-                # showProgress: 'bottom'
-                class: 'success'
-                # displayTime: 'auto',
-                position: "bottom right"
-            )
 
 Template.image_link_edit.events
     'blur .image_link_val': (e,t)->
@@ -224,8 +193,6 @@ Template.image_link_edit.events
                 position: "bottom right"
             )
 
-
-Template.image_edit.events
 Template.image_edit.events
     # "change input[name='upload_image']": (e) ->
     "click .upload_image": (e) ->
@@ -457,34 +424,6 @@ Template.number_edit.events
 #             Docs.update parent._id,
 #                 $set:"#{@key}":val
 
-
-Template.slug_edit.events
-    'blur .edit_text': (e,t)->
-        val = t.$('.edit_text').val()
-        parent = Template.parentData()
-
-        doc = Docs.findOne parent._id
-        if doc
-            Docs.update parent._id,
-                $set:"#{@key}":val
-        $('body').toast(
-            showIcon: 'checkmark'
-            message: "saved"
-            # showProgress: 'bottom'
-            class: 'success'
-            # displayTime: 'auto',
-            position: "bottom center"
-        )
-
-
-#     'click .slugify_title': (e,t)->
-#         page_doc = Docs.findOne Router.current().params.doc_id
-#         # val = t.$('.edit_text').val()
-#         parent = Template.parentData()
-#         doc = Docs.findOne parent._id
-#         Meteor.call 'slugify', page_doc._id, (err,res)=>
-#             Docs.update page_doc._id,
-#                 $set:slug:res
 
 Template.kvs.helpers
     kve_class: ->

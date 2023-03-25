@@ -311,16 +311,6 @@ if Meteor.isClient
     #             $set:"#{@key}":value
 
 
-    Template.goto_model.events
-        'click .goto_model': ->
-            Session.set 'loading', true
-            Meteor.call 'set_facets', @slug, ->
-                Session.set 'loading', false
-
-
-
-
-
     Template.viewing.events
         'click .mark_read': (e,t)->
             Docs.update @_id,
@@ -347,21 +337,6 @@ if Meteor.isClient
             readers
 
 
-
-
-    Template.add_button.onCreated ->
-        Meteor.subscribe 'model_from_slug', @data.model
-    Template.add_button.helpers
-        model: ->
-            data = Template.currentData()
-            Docs.findOne
-                model: 'model'
-                slug: data.model
-    Template.add_button.events
-        'click .add': ->
-            new_id = Docs.insert
-                model: @model
-            Router.go "/m/#{@model}/#{new_id}/edit"
 
 
     Template.delete_button.events
@@ -561,63 +536,62 @@ if Meteor.isClient
     #             # Meteor.call 'unassign_user', page_doc._id, @
     
     
-if Meteor.isClient
-    Template.group_picker.onCreated ->
-        Session.setDefault('group_search','')
-        @autorun => @subscribe 'group_search_results', Session.get('group_search'), ->
-        # @autorun => @subscribe 'model_docs', 'group', ->
-    Template.group_picker.helpers
-        group_results: ->
-            if Session.get('group_search').length > 1
-                Docs.find 
-                    model:'group'
-                    title: {$regex:"#{Session.get('group_search')}",$options:'i'}
+#     Template.group_picker.onCreated ->
+#         Session.setDefault('group_search','')
+#         @autorun => @subscribe 'group_search_results', Session.get('group_search'), ->
+#         # @autorun => @subscribe 'model_docs', 'group', ->
+#     Template.group_picker.helpers
+#         group_results: ->
+#             if Session.get('group_search').length > 1
+#                 Docs.find 
+#                     model:'group'
+#                     title: {$regex:"#{Session.get('group_search')}",$options:'i'}
                 
-        product_groups: ->
-            product = Docs.findOne Router.current().params.doc_id
-            Docs.find 
-                # model:'group'
-                _id:$in:product.group_ids
-        group_search_value: ->
-            Session.get('group_search')
+#         product_groups: ->
+#             product = Docs.findOne Router.current().params.doc_id
+#             Docs.find 
+#                 # model:'group'
+#                 _id:$in:product.group_ids
+#         group_search_value: ->
+#             Session.get('group_search')
         
-    Template.group_picker.events
-        'click .clear_search': (e,t)->
-            Session.set('group_search', null)
-            t.$('.group_search').val('')
+#     Template.group_picker.events
+#         'click .clear_search': (e,t)->
+#             Session.set('group_search', null)
+#             t.$('.group_search').val('')
 
             
-        'click .remove_group': (e,t)->
-            if confirm "remove #{@title} group?"
-                Docs.update Router.current().params.doc_id,
-                    $pull:
-                        group_ids:@_id
-                        group_titles:@title
-        'click .pick_group': (e,t)->
-            Docs.update Router.current().params.doc_id,
-                $addToSet:
-                    group_ids:@_id
-                    group_titles:@title
-            Session.set('group_search',null)
-            t.$('.group_search').val('')
+#         'click .remove_group': (e,t)->
+#             if confirm "remove #{@title} group?"
+#                 Docs.update Router.current().params.doc_id,
+#                     $pull:
+#                         group_ids:@_id
+#                         group_titles:@title
+#         'click .pick_group': (e,t)->
+#             Docs.update Router.current().params.doc_id,
+#                 $addToSet:
+#                     group_ids:@_id
+#                     group_titles:@title
+#             Session.set('group_search',null)
+#             t.$('.group_search').val('')
                     
-        'keyup .group_search': (e,t)->
-            # if e.which is '13'
-            val = t.$('.group_search').val()
-            Session.set('group_search', val)
+#         'keyup .group_search': (e,t)->
+#             # if e.which is '13'
+#             val = t.$('.group_search').val()
+#             Session.set('group_search', val)
 
-        'click .create_group': ->
-            new_id = 
-                Docs.insert 
-                    model:'group'
-                    title:Session.get('group_search')
-            Router.go "/group/#{new_id}/edit"
+#         'click .create_group': ->
+#             new_id = 
+#                 Docs.insert 
+#                     model:'group'
+#                     title:Session.get('group_search')
+#             Router.go "/group/#{new_id}/edit"
 
 
-if Meteor.isServer 
-    Meteor.publish 'group_search_results', (group_title_query='')->
-        if group_title_query.length>1
-            Docs.find 
-                model:'group'
-                title: {$regex:"#{group_title_query}",$options:'i'}
+# if Meteor.isServer 
+#     Meteor.publish 'group_search_results', (group_title_query='')->
+#         if group_title_query.length>1
+#             Docs.find 
+#                 model:'group'
+#                 title: {$regex:"#{group_title_query}",$options:'i'}
 

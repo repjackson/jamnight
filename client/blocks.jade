@@ -467,30 +467,6 @@ template(name='remove_icon')
     i.remove.icon.remove_doc(title='delete')
     //- |Delete
 
-template(name='add_button')
-    a.ui.large.button.add(title="add #{model}")
-        //- |#{model.icon}
-        if model.icon
-            //- i.icon(class=icon)
-            +ismall name=model.icon cl='ui inline image'
-        else 
-            i.plus.icon
-        if label
-            |#{label}
-        //- |#{model}
-
-
-
-template(name='edit_button')
-    a.ui.button.icon.edit(title='Edit' href="/#{model}/#{_id}/edit")
-        i.blue.pencil.icon
-        |edit
-
-
-template(name='save_button')
-    a.ui.button.large.icon.save(title='Save' href="/m/#{model}/#{_id}/view")
-        i.checkmark.icon
-        |save
 
 template(name='toggle_button')
     .ui.icon.toggle.button(title=label)
@@ -503,12 +479,6 @@ template(name='view_user_button')
     .view_user.view(title="view #{username}")
         i.play.icon
         |View
-
-template(name='add_model_button')
-    .ui.icon.button.add(title="add #{model}")
-        i.plus.icon
-        |#{model}
-
 
             
 template(name='email_validation_check')
@@ -537,37 +507,37 @@ template(name='print_this')
 
 
 
-template(name='group_picker')
-    .ui.header 
-        +i name='campfire'
-        |groups
-    // if is_admin
-    .ui.icon.large.input 
-        if group_search_value
-            i.large.red.remove.link.icon.zoomer.clear_search
-        else 
-            i.search.icon
-        input.group_search(type='text' placeholder='search' value=group_search_value)
-    if group_results
-        .ui.selection.link.animated.list
-            each group_results
-                .ui.item.pick_group.zoomer
-                    img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
-                    |#{title}
-    // else if group_search_value
-    .ui.button.create_group
-        i.plus.icon
-        |add #{group_search_value}
+// template(name='group_picker')
+//     .ui.header 
+//         +i name='campfire'
+//         |groups
+//     // if is_admin
+//     .ui.icon.large.input 
+//         if group_search_value
+//             i.large.red.remove.link.icon.zoomer.clear_search
+//         else 
+//             i.search.icon
+//         input.group_search(type='text' placeholder='search' value=group_search_value)
+//     if group_results
+//         .ui.selection.link.animated.list
+//             each group_results
+//                 .ui.item.pick_group.zoomer
+//                     img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+//                     |#{title}
+//     // else if group_search_value
+//     .ui.button.create_group
+//         i.plus.icon
+//         |add #{group_search_value}
     
-    if product_groups
-        .ui.header 
-            |#{product_groups.length}
-            |picked groups
-        .ui.list
-            each product_groups
-                .ui.segment
-                    +group_item
-                    i.remove.link.circular.icon.zoomer.remove_group
+//     if product_groups
+//         .ui.header 
+//             |#{product_groups.length}
+//             |picked groups
+//         .ui.list
+//             each product_groups
+//                 .ui.segment
+//                     +group_item
+//                     i.remove.link.circular.icon.zoomer.remove_group
                     
 
 template(name='set_limit')
