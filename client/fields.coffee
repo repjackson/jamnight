@@ -205,7 +205,6 @@ Template.image_edit.events
             googleApiKey:Meteor.settings.public.custom_search_api
             uploadPreset: 'loompreset'}, (error, result) =>
                 if not error and result and result.event is "success"
-                    console.log('Done! Here is the image info: ', result.info); 
                     Docs.update parent._id,
                         $set:
                             # "#{@key}":res.public_id
@@ -290,7 +289,6 @@ Template.array_edit.events
         $(e.currentTarget).closest('.touch_element').transition('slide left')
         
     'click .pick_tag': (e,t)->
-        # console.log @
         picked_tags.clear()
         picked_tags.push @valueOf()
         Router.go "/#{Router.current().params.group}"
@@ -304,7 +302,6 @@ Template.array_edit.events
                 # else
                 #     parent = Template.parentData(5)
                 doc = Docs.findOne parent._id
-                console.log element_val.split("\n")
 
                 if doc
                     Docs.update parent._id,
@@ -399,7 +396,6 @@ Template.text_edit.events
 
 Template.number_edit.events
     'blur .edit_number': (e,t)->
-        # console.log @
         parent = Template.parentData()
         val = parseInt t.$('.edit_number').val()
         doc = Docs.findOne parent._id
@@ -615,7 +611,6 @@ Template.multi_user_view.onCreated ->
     @autorun => @subscribe 'all_users'
 Template.multi_user_view.helpers
     user_results: -> 
-        console.log Template.instance().user_results.get()
         Template.instance().user_results.get()
 
 
@@ -625,34 +620,21 @@ Template.multi_user_edit.onCreated ->
     @autorun => @subscribe 'all_users'
 Template.multi_user_edit.helpers
     user_results: -> 
-        console.log Template.instance().user_results.get()
         Template.instance().user_results.get()
 Template.multi_user_edit.events
-    'click .clear_results': (e,t)->
-        t.user_results.set null
+    'click .clear_results': (e,t)-> t.user_results.set null
 
     'keyup .multi_user_select_input': (e,t)->
         search_value = $(e.currentTarget).closest('.multi_user_select_input').val().trim()
         if search_value.length > 1
-            console.log 'searching', search_value
             Meteor.call 'lookup_user', search_value, @role_filter, (err,res)=>
                 if err then console.error err
                 else
                     t.user_results.set res
 
-    'click .select_user': (e,t) ->
+    'click .select_user': (e,t)->
         page_doc = Docs.findOne Router.current().params.doc_id
         field = Template.currentData()
-
-        # console.log @
-        console.log 'adding', @
-        console.log Template.parentData()
-        console.log Template.currentData()
-        # console.log Template.parentData(1)
-        # console.log Template.parentData(2)
-        # console.log Template.parentData(3)
-        # console.log Template.parentData(4)
-
 
         val = t.$('.multi_user_select_input').val()
         parent = Template.parentData()
@@ -700,7 +682,6 @@ Template.single_user_edit.onCreated ->
         
 Template.single_user_edit.helpers
     user_results: ->
-        console.log Template.instance().user_results.get()
         Template.instance().user_results.get()
         
 Template.single_user_edit.events
@@ -710,7 +691,6 @@ Template.single_user_edit.events
     'keyup .single_user_select_input': (e,t)->
         search_value = $(e.currentTarget).closest('.single_user_select_input').val().trim()
         if search_value.length > 1
-            console.log 'searching', search_value
             Meteor.call 'lookup_user', search_value, @role_filter, (err,res)=>
                 if err then console.error err
                 else
@@ -720,13 +700,6 @@ Template.single_user_edit.events
         page_doc = Docs.findOne Router.current().params.doc_id
         field = Template.currentData()
 
-        # console.log @
-        # console.log Template.currentData()
-        # console.log Template.parentData()
-        # console.log Template.parentData(1)
-        # console.log Template.parentData(2)
-        # console.log Template.parentData(3)
-        # console.log Template.parentData(4)
 
 
         val = t.$('.edit_text').val()
@@ -763,10 +736,8 @@ Template.single_user_edit.events
     'click .add_user': (e,t)->
         # search_value = $(e.currentTarget).closest('.single_user_select_input').val().trim()
         # search_value = $(e.currentTarget).closest('.single_user_select_input').val()
-        # console.log search_value
         new_username = prompt('username')
         Meteor.call 'add_user', new_username, (err,res)->
-            console.log res
             new_user = Meteor.users.findOne res
             # Router.go "/user/#{new_user.username}"
         

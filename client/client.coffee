@@ -5,9 +5,20 @@
 # @picked_ingredients = new ReactiveArray []
 
 Template.home.onCreated ->
-    Meteor.subscribe 'home_docs', ->
+    Meteor.subscribe 'model_docs','checkin', ->
 
+Template.home.events
+    'click .cancel_checkin': ->
+        Docs.remove Session.get('current_checkin_id')
+    'click .new_checkin': ->
+        new_id = 
+            Docs.insert 
+                model:'checkin'
+        Session.set('current_checkin_id',new_id)
 Template.home.helpers 
+    current_checkin: ->
+        Docs.findOne 
+            _id:Session.get('current_checkin_id')
     home_docs: ->
         Docs.find 
             model:'post'

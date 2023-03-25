@@ -101,7 +101,6 @@ template(name='nav')
                     // i.sign.in.large.icon
                     +i name='internal'
                     span.mobile.hidden login
-                
     
 template(name='layout')
     // img.ui.fluid.image.checkin_banner(src="{{c.url 'cafe'}}")
@@ -115,40 +114,52 @@ template(name='home')
     .ui.centered.padded.stackable.grid 
         .center.aligned.row
             .ten.wide.center.aligned.column 
-                .ui.header welcome to jam night
-                .ui.fluid.button sign in
-                .ui.large.fluid.input
-                    input(type='text' placeholder='name')
-                each users 
-                    .ui.button.pick_user 
-                        |#{username}
-                .ui.big.circular.button
-                    +i name='audience'
-                    |audience
-                .ui.big.circular.button
-                    +i name='music'
-                    |musician
-                .ui.big.circular.button
-                    +i name='volunteering'
-                    |volunteer
-                div
-                .ui.big.circular.button
-                    +i name='guitar-strings'
-                    |bass
-                .ui.big.circular.button
-                    +i name='guitar'
-                    |guitar
-                .ui.big.circular.button
-                    +i name='drum-set'
-                    |drums
-                .ui.big.circular.button
-                    +i name='piano'
-                    |piano
-                .ui.big.circular.button
-                    +i name='concert'
-                    |singer
-                .ui.big.fluid.green.button 
-                    |sign in
+                .ui.header 
+                    +i name='music-band'                
+                    |welcome to jam night
+                unless current_checkin
+                    .ui.fluid.large.green.button.new_checkin 
+                        +i name='checkmark'
+                        |check in
+                with current_checkin
+                    .ui.large.fluid.basic.circular.red.button.cancel_checkin
+                        +i name='cancel'
+                        |cancel checkin
+                    .ui.large.fluid.input
+                        input(type='text' placeholder='name')
+                    each users 
+                        .ui.button.pick_user 
+                            |#{username}
+                    .ui.big.circular.button
+                        +i name='audience'
+                        |audience
+                    .ui.big.circular.button
+                        +i name='music'
+                        |musician
+                    .ui.big.circular.button
+                        +i name='volunteering'
+                        |volunteer
+                    div
+                    .ui.big.circular.button
+                        +i name='guitar-strings'
+                        |bass
+                    .ui.big.circular.button
+                        +i name='guitar'
+                        |guitar
+                    .ui.big.circular.button
+                        +i name='drum-set'
+                        |drums
+                    .ui.big.circular.button
+                        +i name='piano'
+                        |piano
+                    .ui.big.circular.button
+                        +i name='concert'
+                        |singer
+                    .ui.big.fluid.green.button 
+                        |sign in
+                        
+                        
+                        
             each user_docs
                 .ui.button #{username}
                 
