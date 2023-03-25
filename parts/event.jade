@@ -156,62 +156,7 @@ template(name='event_card')
                         |#{body}
             if in_dev
                 +print_this
-            +voting
-            +favorite_icon_toggle
 
-template(name='event_item')
-    .ui.item
-        .content
-            if image_id
-                a.fly_right(href="/event/#{_id}")
-                    img.ui.small.inline.image.rounded(src="{{c.url image_id gravity='center' crop='fill'}}" class=currentUser.invert_class)
-            a.ui.inline.header.fly_right(href="/event/#{_id}") #{title} 
-            .ui.small.inline.header {{medium_date date}} 
-                if time 
-                    |{{time}}
-            if start_datetime
-                .ui.small.inline.grey.header 
-                    |{{medium_date start_datetime}} 
-                    if time 
-                        |{{time}}
-                .ui.small.inline.header {{from_now start_datetime}}
-            if is_repeating
-                +i name='refresh' title='repeating'
-                |every #{repeating_day}
-                    
-            // .ui.inline.small.header {{long_date start_datetime}}
-            // div
-            // .ui.small.grey.inline.header {{from_now start_datetime}}
-            if location
-                i.marker.icon 
-                |#{location}
-            // small led by
-            img.ui.avatar.image(src="{{c.url host.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
-            strong #{host.name}
-            |#{event_tickets.count}
-            a(href="/event/#{_id}" title='ticket purchase required')
-                i.checkmark.green.link.icon
-            | #{maybe_user_ids.count}
-            each going
-                img.ui.avatar.image(src="{{c.url image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
-            i.question.orange.link.icon.mark_maybe(title='mark yourself maybe')
-            | #{maybe_user_ids.length}
-            each maybe_going
-                img.ui.avatar.image(src="{{c.url image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
-            | #{not_user_ids.length}
-            i.ban.red.link.icon.mark_not(title='mark yourself not')
-            each not_going
-                img.ui.avatar.image(src="{{c.url image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
-            if doc_comments.count
-                .meta
-                    each doc_comments 
-                        i.grey.chat.outline.icon
-                        img.ui.avatar.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=user_class)
-                        |#{body}
-            if in_dev
-                +print_this
-            +voting
-            +favorite_icon_toggle
 
 template(name='gcal_button')
     a.ui.circular.circular.large.button(href="http://www.google.com/calendar/event?action=TEMPLATE&text=#{title}&dates=#{start_datetime}/#{end_datetime}&details=#{description}&location=#{location}" target="_window")
@@ -492,20 +437,25 @@ template(name='event_view')
                     // .spacer
                     .ui.header
                         +i name='tasks'
-                        |task templates
+                        |tasks
                     .ui.stackable.four.cards 
                         each model_docs_helper 'task' 
                             .card 
                                 img.ui.rounded.image(src="{{c.url image_id }}" class=currentUser.invert_class)
                                 .content
-                                    |#{title}
+                                    .ui.label
+                                        |#{credit_bounty} credits
+                                    .ui.label
+                                        |#{slot_amount} slots
+
                                     unless task_instance
+                                        |#{title}
                                         .ui.button.generate_task 
-                                            |generate 
+                                            |make task instance
                                     with task_instance
                                         .ui.header #{_task.title}
                                         +single_user_edit key='assigned_user_id' label='assigned to'
-                            
+                                        +boolean_edit key='completed' label='completed' icon='checkmark'
                 .four.wide.column.scrollin
                     if link 
                         a.ui.big.basic.fluid.compact.button(href=link target='_window' title=link)
@@ -524,13 +474,13 @@ template(name='event_view')
                     //     .ui.inline.header.pointer.zoom
                     //         |#{event_room.title}
                     // if is_admin
-                    .ui.dividing.header 
-                        // i.pencil.icon
-                        +i name='poem'
-                        | author
-                    a.ui.header.zoomer(href="/user/#{_author.username}") 
-                        img.ui.avatar.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
-                        |#{_author.name}
+                    // .ui.dividing.header 
+                    //     // i.pencil.icon
+                    //     +i name='poem'
+                    //     | author
+                    // a.ui.header.zoomer(href="/user/#{_author.username}") 
+                    //     img.ui.avatar.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                    //     |#{_author.name}
                     if host
                         .ui.dividing.header 
                             i.chess.king.grey.icon

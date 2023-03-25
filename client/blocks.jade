@@ -116,7 +116,7 @@ template(name='doc_comment')
                 if session_is 'editing_mode' true
                     +text_edit key='body'  
                     +delete_button
-                    +boolean_edit key='anon' icon='private' label='anon'  
+                    // +boolean_edit key='anon' icon='private' label='anon'  
             .meta #{when}
                 |by 
                 if anon 
@@ -179,7 +179,7 @@ template(name='user_info')
 
 
 template(name='session_boolean_toggle')
-    .ui.compact.button.toggle_session_key(class=calculated_class)
+    .ui.compact.icon.circular.button.toggle_session_key(class=calculated_class title=label)
         // +i name=icon cl='ui avatar image'
         i.icon(class=icon)
         |#{label}

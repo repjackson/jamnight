@@ -4,9 +4,6 @@ if Meteor.isClient
         @render 'user'
         ), name:'user'
 
-
-
-    Template.user.onCreated ->
     Template.user.onCreated ->
         @autorun -> Meteor.subscribe 'user_hosted_events', Router.current().params.username, ->
         @autorun -> Meteor.subscribe 'user_going_events', Router.current().params.username, ->
@@ -14,8 +11,6 @@ if Meteor.isClient
         @autorun -> Meteor.subscribe 'username_model_docs', Router.current().params.username, 'comment', ->
         # @autorun => Meteor.subscribe 'user', Router.current().params.username
         # @autorun => Meteor.subscribe 'model_docs', 'order'
-        
-        @autorun => Meteor.subscribe 'user_groups', Router.current().params.username, ->
         @autorun => Meteor.subscribe 'user_posts', Router.current().params.username, ->
         @autorun -> Meteor.subscribe 'user_from_username', Router.current().params.username, ->
         # @autorun -> Meteor.subscribe 'user_referenced_docs', Router.current().params.username, ->
@@ -54,8 +49,6 @@ if Meteor.isClient
         user: ->
             Meteor.users.findOne username:Router.current().params.username
     
-    
-    
         user_event_tickets: ->
             current_user = Meteor.users.findOne(username:Router.current().params.username)
             Docs.find {
@@ -81,27 +74,6 @@ if Meteor.isClient
             Docs.find
                 model:'event'
                 host_id:user._id
-
-    Template.user_groups.onCreated ->
-        Session.setDefault 'view_group_members', true
-        @autorun -> Meteor.subscribe 'user_member_groups', Router.current().params.username, ->
-        @autorun -> Meteor.subscribe 'user_leader_groups', Router.current().params.username, ->
-
-
-    Template.user_groups.helpers 
-        user_member_groups: ->
-            user = Meteor.users.findOne username:@username
-            Docs.find
-                model:'group'
-                member_ids:$in:[user._id]
-            
-        user_leader_groups: ->
-            user = Meteor.users.findOne username:@username
-            Docs.find
-                model:'group'
-                group_leader_ids:$in:[user._id]
-
-
 
 if Meteor.isServer 
     Meteor.publish 'user_bookmark_docs', ->
@@ -203,11 +175,6 @@ if Meteor.isServer
         #     Docs.find   
         #         model:model
         #         _author_username:Meteor.user().username            
-                
-                
-                
-
-if Meteor.isServer
     Meteor.publish 'user_event_tickets', (username)->
         user = Meteor.users.findOne username:username
         if user
@@ -221,28 +188,6 @@ if Meteor.isServer
             })
         
         
-        
-        
-
-if Meteor.isServer
-    Meteor.methods 
-        enter_group: (group_id)->
-            Meteor.users.update Meteor.userId(),
-                $set:
-                    current_group_id:group_id
-    
-    Meteor.publish 'user_member_groups', (username)->
-        user = Meteor.users.findOne username:username
-        Docs.find
-            model:'group'
-            member_ids:$in:[user._id]
-            
-    Meteor.publish 'user_leader_groups', (username)->
-        user = Meteor.users.findOne username:username
-        Docs.find
-            model:'group'
-            group_leader_ids:$in:[user._id]
-            
     Meteor.publish 'user_going_events', (username)->
         user = Meteor.users.findOne username:username
         Docs.find

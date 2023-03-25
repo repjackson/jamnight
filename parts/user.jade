@@ -83,21 +83,12 @@ template(name='user')
                             .ui.small.header(title='status' )
                                 i.grey.clock.icon
                                 |!{current_status}
-                    +array_view key='allergens' label='allergens' icon='no-milk'  
-                    +array_view key='food_dislikes' label='food dislikes' icon='disgusting'  
-                    // if in_dev
-                    //     .ui.small.inline.header #{_id}
-                    +link_view key='user_link' label='user link' icon='link'  
-                    +link_view key='genekeys_link' label='genekeys link' icon='link'  
-                    +image_view key='human_design' label='human design' icon=''  
                 .twelve.wide.column.scrolling
                     .ui.two.column.grid 
                         // .column
                             // +user_nav_link icon='blog' label='posts' route='posts'
                         .column
                             +user_posts
-                        .column
-                            +user_groups
                         .column
                             +user_points
                         .column
@@ -122,7 +113,8 @@ template(name='user_nav_link')
 template(name='user_points')
     .ui.header
         +i name='leaderboard'
-        |user points
+        |user coins
+        
     .ui.header 
         +i name='sent'
         |sent 
@@ -238,35 +230,6 @@ template(name='user_events')
                 each user_going_events
                     +event_item_small
 
-template(name='user_groups')
-    a.ui.inline.header.zoomer(href="/groups")
-        +icolor name='campfire'
-        |groups
-    div
-    if user_leader_groups.count
-        .ui.header
-            // i.king.icon
-            +i name='king'
-            |group leader of
-        each user_leader_groups
-            .ui.segment
-                a.ui.header(href="/m/group/#{_id}") #{title}
-                if is_current_user
-                    +enter_group
-    if user_member_groups.count
-        a.ui.small.header.toggle_group_members.zoomer.pointer(title='toggle group members')
-            |member of 
-            |#{user_member_groups.count}
-            // if session_is 'view_group_members' true
-            //     i.chevron.down.icon
-            // else                                    
-            //     i.chevron.right.icon
-        // if session_is 'view_group_members' true
-        .ui.selection.link.list.smallscroll
-            each user_member_groups
-                +user_group_item
-
-
 template(name='user_tickets')
     .medscrolls
         .ui.header 
@@ -305,16 +268,6 @@ template(name='user_friends')
         //     .item #{username}
                     
                            
-template(name='user_group_item')
-    a.item.zoomer(href="/group/#{_id}")
-        // .image
-        img.ui.avatar.image(src="{{c.url image_id height=400 width=400 crop='fit'}}" class=currentUser.invert_class)
-        .content
-            | #{title}
-            if private 
-                i.large.lock.icon(title='private')
-                       
-                                
 template(name='event_item_small')
     a.ui.item(href="/event/#{_id}")
         img.ui.avatar.image(src="{{c.url image_id height=400 width=400 crop='fit'}}" class=currentUser.invert_class)
