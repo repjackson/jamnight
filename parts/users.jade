@@ -1,6 +1,6 @@
 template(name='users')
     .ui.padded.stackable.grid.scrolling
-        .sixteen.wide.column
+        .sixteen.wide.middle.aligned.column
             .ui.inline.header
                 +i name='gender-neutral-user'
                 |#{user_docs.length}
@@ -33,7 +33,6 @@ template(name='users')
             each all_user_tags
                 .ui.compact.basic.button.pick_user_tag.zoomer(class=cloud_tag_class) 
                     strong #{this.name}
-        .sixteen.wide.column
             +sort_direction_button
             // +session_icon_button key='view_mode' value='grid' icon='grid' 
             // +session_icon_button key='view_mode' value='list' icon='list'
@@ -59,6 +58,7 @@ template(name='users')
             // .ui.header
             // +i name='tag'
             // +i name='campfire'
+        .sixteen.wide.column
             .scrolling
                 if session_is 'view_mode' 'grid'
                     if one_result

@@ -44,14 +44,18 @@ Template.home.events
                     task_ids:@_id 
     'click .pick_user': ->
         cd = Docs.findOne Session.get('current_checkin_id')
-        if @_id is cd.user_id
-            Docs.update Session.get('current_checkin_id'),
-                $unset:user_id:1 
-        else             
-            Docs.update Session.get('current_checkin_id'),
-                $set:user_id:@_id 
+        # if @_id is cd.user_id
+        Docs.update Session.get('current_checkin_id'),
+            $set:user_id:@_id 
+    'click .unpick_user': ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        Docs.update Session.get('current_checkin_id'),
+            $unset:user_id:1 
         
 Template.home.helpers
+    picked_user: ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        Meteor.users.findOne cd.user_id
     task_class: ->
         cd = Docs.findOne Session.get('current_checkin_id')
         if @_id in cd.task_ids then 'blue' else 'basic compact'

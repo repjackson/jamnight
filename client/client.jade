@@ -127,13 +127,19 @@ template(name='home')
                         |cancel checkin
                     // .ui.large.fluid.input
                     //     input(type='text' placeholder='name')
-                    .ui.inline.header 
-                        +i name='groups'
-                        |pick user
-                    each user_docs
-                        .ui.big.circular.button.pick_user(class=user_class)
+                    with picked_user
+                        .ui.inline.header picked user
+                        .ui.big.circular.blue.button.unpick_user 
                             img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
                             |#{username}
+                    unless user_id
+                        .ui.inline.header 
+                            +i name='groups'
+                            |pick user
+                        each user_docs
+                            .ui.big.circular.button.pick_user(class=user_class)
+                                img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                |#{username}
                     div
                     .ui.inline.header 
                         // +i name='groups'
