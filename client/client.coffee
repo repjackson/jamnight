@@ -108,6 +108,10 @@ Template.home.events
     'click .pick_user': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         # if @_id is cd.user_id
+        Meteor.users.update @_id, 
+            $set:
+                checked_in:true
+                last_checkin:Date.now()
         Docs.update Session.get('current_checkin_id'),
             $set:
                 user_id:@_id 
@@ -133,7 +137,10 @@ Template.home.events
                 console.log res
                 user = Meteor.users.findOne res
                 Meteor.users.update res,
-                    $set:name:query
+                    $set:
+                        name:query
+                        checked_in:true 
+                        last_checkin:Date.now()
                 Docs.update Session.get('current_checkin_id'),
                     $set:
                         user_id:res
@@ -170,13 +177,18 @@ Template.home.helpers
         if Session.get('user_query')
             # match.username = 
             Meteor.users.find({
-                $or: [
-                    {username:$regex:"#{Session.get('user_query')}", $options: 'i'}
-                    {name:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                $and: [
+                    checked_in:$ne:true
+                    $or: [
+                        {username:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                        {name:$regex:"#{Session.get('user_query')}", $options: 'i'}
                     ]
+                ]
                 })
         else 
-            Meteor.users.find()
+            Meteor.users.find({
+                checked_in:$ne:true
+                })
     parent_event: ->
         Docs.findOne 
             model:'task'

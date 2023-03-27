@@ -166,6 +166,8 @@ template(name='home')
                                         |#{name}
                                     else 
                                         |#{username}
+                                    if checked_in
+                                        i.green.clock.icon(title='checked in')
                             div
                             if user_query.length
                                 .ui.massive.circular.basic.green.button.add_user 
@@ -219,10 +221,16 @@ template(name='home')
                                     i.grey.user.icon
                                     |#{username} 
                                 |#{when}
-                                if _is 'checkin_type' 'musician'
-                                    if musician_type
-                                        .ui.basic.large.label
-                                            +i name='music'
+                                .ui.basic.large.label
+                                    if _is 'checkin_type' 'audience'
+                                        +i name='audience'
+                                        |audience        
+                                    else if _is 'checkin_type' 'volunteer'
+                                        +i name='hand-holding-heart'
+                                        |volunteer        
+                                    else if _is 'checkin_type' 'musician'
+                                        +i name='music'
+                                        if musician_type
                                             |#{musician_type}
                                             if _is 'musician_type' 'guitar'
                                                 +i name='guitar'
@@ -269,7 +277,7 @@ template(name='footer')
                         a.ui.image.inverted.black.basic.label(href="/user/#{username}")
                             img.ui.avatar.image.zoomer(src="{{c.url image_id width=300 height=300 crop='crop'}}")    
                             |#{username}
-                        if current_user.admin_mode
+                        if currentUser.admin_mode
                             +print_this
                     div
                     .ui.inverted.inline.header 

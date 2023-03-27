@@ -69,12 +69,12 @@ Cloudinary.config
 
 Meteor.publish 'all_users', ()->
     Meteor.users.find {}, {
-        fields:
-            username:1
-            image_id:1
-            tags:1
-            first_name:1
-            last_name:1
+        # fields:
+        #     username:1
+        #     image_id:1
+        #     tags:1
+        #     first_name:1
+        #     last_name:1
     }
             
     
