@@ -113,21 +113,22 @@ template(name='layout')
 template(name='home')
     .ui.centered.padded.stackable.grid 
         .center.aligned.row
-            .sixteen.wide.center.aligned.column.zoomed
+            .sixteen.wide.center.aligned.column.zoome
                 unless current_checkin
                     .ui.header 
                         +i name='music-band'                
                         |welcome to jam night
-                    a.ui.fluid.large.green.basic.button.new_checkin 
-                        +i name='checkmark'
+                    a.ui.fluid.massive.circular.green.button.new_checkin 
+                        // +i name='checkmark'
+                        i.plus.icon
                         |new check in
                 with current_checkin
-                    a.ui.large.basic.circular.red.button.cancel_checkin
+                    a.ui.massive.basic.circular.red.image.label.cancel_checkin
                         +i name='cancel'
                         |cancel
                     
                     each event_docs 
-                        a.ui.basic.circular.big.button.pick_event(class=event_button_class) 
+                        a.ui.circular.massive.image.label.pick_event(class=event_button_class) 
                             if current 
                                 +i name='clock'
                             |#{title}
@@ -140,10 +141,11 @@ template(name='home')
                                     i.user.icon
                                 input.user_input(type='text' placeholder='search/add name' value=user_query)
                         with picked_user
-                            .ui.inline.header picked user
-                            a.ui.big.circular.blue.button.unpick_user 
+                            // .ui.inline.header picked user
+                            +i name='groups' cl='ui inline image'
+                            a.ui.massive.circular.blue.image.label.unpick_user 
                                 if image_id
-                                    img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                    img.ui.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
                                 else 
                                     i.user.icon
                                 if name
@@ -152,13 +154,13 @@ template(name='home')
                                     |#{username}
                         unless user_id
                             if user_docs.count
-                                .ui.center.aligned.header 
-                                    +i name='groups'
+                                .ui.inline.header 
+                                    +i name='groups' cl='ui inline image'
                                     |pick user
                             each user_docs
-                                a.ui.big.circular.button.pick_user(class=user_class)
+                                a.ui.massive.circular.image.label.pick_user(class=user_class)
                                     if image_id
-                                        img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                        img.ui.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
                                     else 
                                         i.user.icon
                                     if name
@@ -167,7 +169,7 @@ template(name='home')
                                         |#{username}
                             div
                             if user_query.length
-                                .ui.big.circular.basic.green.button.add_user 
+                                .ui.massive.circular.basic.green.button.add_user 
                                     i.user.plus.icon 
                                     small add:
                                     strong #{user_query}

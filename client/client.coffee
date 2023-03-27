@@ -122,6 +122,8 @@ Template.home.events
                 console.log res
                 Meteor.users.update res,
                     $set:name:query
+                Docs.update Session.get('current_checkin_id'),
+                    $set:user_id:res
 
 Template.home.helpers
     user_query: -> Session.get('user_query')
@@ -158,12 +160,18 @@ Template.home.helpers
                     {name:$regex:"#{Session.get('user_query')}", $options: 'i'}
                     ]
                 })
+        else 
+            Meteor.users.find()
     current_checkin: ->
         Docs.findOne 
             _id:Session.get('current_checkin_id')
     event_docs: ->
-        Docs.find 
-            model:'event'
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if cd.event_id
+            Docs.find _id:cd.event_id
+        else 
+            Docs.find
+                model:'event'
 Template.layout.events 
     'click .clear_search': -> 
         Session.set('user_query',null)
