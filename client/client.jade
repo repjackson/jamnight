@@ -126,7 +126,6 @@ template(name='home')
                     a.ui.massive.basic.circular.red.image.label.cancel_checkin
                         +i name='cancel'
                         |cancel
-                    
                     each event_docs 
                         a.ui.circular.massive.image.label.pick_event(class=event_button_class) 
                             if current 
@@ -147,7 +146,7 @@ template(name='home')
                                 if image_id
                                     img.ui.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
                                 else 
-                                    i.user.icon
+                                    i.user.grey.icon
                                 if name
                                     |#{name}
                                 else
@@ -162,7 +161,7 @@ template(name='home')
                                     if image_id
                                         img.ui.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
                                     else 
-                                        i.user.icon
+                                        i.user.grey.icon
                                     if name
                                         |#{name}
                                     else 
@@ -193,11 +192,15 @@ template(name='home')
                                 // .ui.header pick slot
                             if kve 'checkin_type' 'volunteer'
                                 .ui.header pick tasks 
-                                each model_docs_helper 'task'
-                                    .ui.big.circular.button.pick_task(class=task_class)
-                                        if image_id
-                                            img.ui.tiny.inline.rounded.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
-                                        |#{title}
+                                each event_tasks
+                                    .ui.massive.circular.image.label.pick_task(class=task_class)
+                                        if parent_event.image_id
+                                            img.ui.rounded.image(src="{{c.url parent_event.image_id width=200 height=200 crop='fit'}}")    
+                                        |#{parent_event.title}
+                                        i.hashtag.icon 
+                                        |#{parent_event.slot_amount}
+                                        i.coins.icon
+                                        |#{parent_event.credit_bounty}
                             if kve 'checkin_type' 'audience'
                                 .ui.header please see staff to purchase ticket
                             .ui.hidden.divider
@@ -212,7 +215,10 @@ template(name='home')
                     .ui.large.list 
                         each checkin_docs 
                             .item 
-                                |#{username} #{when}
+                                .ui.big.basic.label
+                                    i.grey.user.icon
+                                    |#{username} 
+                                |#{when}
                                 if _is 'checkin_type' 'musician'
                                     if musician_type
                                         .ui.basic.large.label

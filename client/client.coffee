@@ -5,6 +5,7 @@
 # @picked_ingredients = new ReactiveArray []
 
 Template.home.onCreated ->
+    Meteor.subscribe 'event_task_instances',Session.get('current_checkin_id'), ->
     Meteor.subscribe 'model_docs','event', ->
     Meteor.subscribe 'model_docs','checkin', ->
     Meteor.subscribe 'model_docs','task', ->
@@ -44,7 +45,7 @@ Template.home.events
                         alert err
                     else
                         console.log res
-                        user = Meteor.user.findOne res
+                        user = Meteor.users.findOne res
                         Meteor.users.update res,
                             $set:
                                 name:query
@@ -84,14 +85,16 @@ Template.home.events
                 event_id:current_event._id
     'click .pick_task': ->
         cd = Docs.findOne Session.get('current_checkin_id')
-        if @_id in cd.task_ids
+        if cd.task_ids
+            if @_id in cd.task_ids
+                Docs.update Session.get('current_checkin_id'),
+                    $pull:task_ids:@_id 
+            else             
+                Docs.update Session.get('current_checkin_id'),
+                    $addToSet:task_ids:@_id 
+        else 
             Docs.update Session.get('current_checkin_id'),
-                $pull:
-                    task_ids:@_id 
-        else             
-            Docs.update Session.get('current_checkin_id'),
-                $addToSet:
-                    task_ids:@_id 
+                $addToSet:task_ids:@_id 
     'click .pick_event': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         unless @_id is cd.event_id
@@ -174,6 +177,10 @@ Template.home.helpers
                 })
         else 
             Meteor.users.find()
+    parent_event: ->
+        Docs.findOne 
+            model:'task'
+            _id:@task_id
     current_checkin: ->
         Docs.findOne 
             _id:Session.get('current_checkin_id')
@@ -184,6 +191,9 @@ Template.home.helpers
         else 
             Docs.find
                 model:'event'
+    event_tasks: ->
+        Docs.find 
+            model:'task_instance'
     checkin_docs: ->
         Docs.find {
             model:'checkin'

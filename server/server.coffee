@@ -28,6 +28,12 @@ Docs.allow
         userId
         # doc._author_id is userId or 'admin' in Meteor.user().roles
 
+Meteor.publish 'event_task_instances', (checkin_id)->
+    checkin_doc = Docs.findOne checkin_id
+    if checkin_doc.event_id 
+        Docs.find 
+            model:'task_instance'
+            event_id:checkin_doc.event_id
 Meteor.publish 'docs', (picked_tags, filter)->
     # user = Meteor.users.findOne @userId
     # console.log picked_tags
