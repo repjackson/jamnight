@@ -100,6 +100,9 @@ input {
   margin:2px !important;
 }
 
+.zoomed{
+    zoom:150% !important;
+}
 .zoomer{
     transition: transform 3s; /* Animation */
     transition: scale 1s; /* Animation */

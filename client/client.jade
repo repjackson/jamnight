@@ -113,7 +113,7 @@ template(name='layout')
 template(name='home')
     .ui.centered.padded.stackable.grid 
         .center.aligned.row
-            .sixteen.wide.center.aligned.column 
+            .sixteen.wide.center.aligned.column.zoomed
                 unless current_checkin
                     .ui.header 
                         +i name='music-band'                
@@ -125,8 +125,13 @@ template(name='home')
                     .ui.large.fluid.basic.circular.red.button.cancel_checkin
                         +i name='cancel'
                         |cancel checkin
-                    // .ui.large.fluid.input
-                    //     input(type='text' placeholder='name')
+                    unless picked_user
+                        .ui.large.fluid.big.icon.input
+                            if user_query   
+                                i.large.remove.red.link.icon.clear_search
+                            else 
+                                i.user.icon
+                            input.user_input(type='text' placeholder='search/add name' value=user_query)
                     with picked_user
                         .ui.inline.header picked user
                         .ui.big.circular.blue.button.unpick_user 
@@ -139,39 +144,44 @@ template(name='home')
                         each user_docs
                             .ui.big.circular.button.pick_user(class=user_class)
                                 img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
-                                |#{username}
+                                if name
+                                    |#{name}
+                                else 
+                                    |#{username}
+                        .ui.button.add_user 
+                            i.plus.icon 
+                            |add #{user_query}
                     div
-                    .ui.inline.header 
-                        // +i name='groups'
-                        |pick type
-                    +kvs key='checkin_type' value='audience' icon='audience'
-                    +kvs key='checkin_type' value='musician' icon='music'
-                    +kvs key='checkin_type' value='volunteer' icon='volunteering'
-                    div
-                    if kve 'checkin_type' 'musician'
-                        .ui.inline.header pick instrument
-                        +kvs key='musician_type' value='bass' icon='guitar-strings'
-                        +kvs key='musician_type' value='guitar' icon='guitar'
-                        +kvs key='musician_type' value='drums' icon='drum-set'
-                        +kvs key='musician_type' value='piano' icon='piano'
-                        +kvs key='musician_type' value='singer' icon='concert'
-                        +kvs key='musician_type' value='other' icon='orchestra'
-                        // .ui.header pick slot
-                        
-                    
-                    if kve 'checkin_type' 'volunteer'
-                        .ui.header pick tasks 
-                        each model_docs_helper 'task'
-                            .ui.big.circular.button.pick_task(class=task_class)
-                                img.ui.tiny.inline.rounded.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
-                                |#{title}
-                    if kve 'checkin_type' 'audience'
-                        .ui.header please see staff to purchase ticket
-                    .ui.hidden.divider
-                    if can_complete
-                        .ui.big.fluid.green.circular.button.complete_checkin
-                            +i name='checkmark'
-                            |complete check in
+                    if user_id
+                        .ui.inline.header 
+                            // +i name='groups'
+                            |pick type
+                        +kvs key='checkin_type' value='audience' icon='audience'
+                        +kvs key='checkin_type' value='musician' icon='music'
+                        +kvs key='checkin_type' value='volunteer' icon='volunteering'
+                        div
+                        if kve 'checkin_type' 'musician'
+                            .ui.inline.header pick instrument
+                            +kvs key='musician_type' value='bass' icon='guitar-strings'
+                            +kvs key='musician_type' value='guitar' icon='guitar'
+                            +kvs key='musician_type' value='drums' icon='drum-set'
+                            +kvs key='musician_type' value='piano' icon='piano'
+                            +kvs key='musician_type' value='singer' icon='concert'
+                            +kvs key='musician_type' value='other' icon='orchestra'
+                            // .ui.header pick slot
+                        if kve 'checkin_type' 'volunteer'
+                            .ui.header pick tasks 
+                            each model_docs_helper 'task'
+                                .ui.big.circular.button.pick_task(class=task_class)
+                                    img.ui.tiny.inline.rounded.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                    |#{title}
+                        if kve 'checkin_type' 'audience'
+                            .ui.header please see staff to purchase ticket
+                        .ui.hidden.divider
+                        if can_complete
+                            .ui.big.fluid.green.circular.button.complete_checkin
+                                +i name='checkmark'
+                                |complete check in
                         
                         
                 

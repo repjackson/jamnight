@@ -10,6 +10,11 @@ Template.home.onCreated ->
     Meteor.subscribe 'model_docs','all_users', ->
 
 Template.home.events
+    'keyup .user_input': (e,t)->
+        search_value = $(e.currentTarget).closest('.user_input').val().trim()
+        if search_value.length > 1
+            Session.set('user_query',search_value)
+
     'click .complete_checkin': ->
         Docs.update Session.get('current_checkin_id'),
             $set:
@@ -51,8 +56,25 @@ Template.home.events
         cd = Docs.findOne Session.get('current_checkin_id')
         Docs.update Session.get('current_checkin_id'),
             $unset:user_id:1 
-        
+    'click .add_user': ->
+        query = Session.get('user_query')
+        slugged = query.toString().toLowerCase().replace(/\s+/g, '_').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '_').replace(/^-+/, '').replace(/-+$/,'')
+
+        options = {
+            username:slugged
+            password:slugged
+            }
+        console.log options
+        Meteor.call 'create_user', options, (err,res)=>
+            if err
+                alert err
+            else
+                console.log res
+                Meteor.users.update res,
+                    $set:name:query
+
 Template.home.helpers
+    user_query: -> Session.get('user_query')
     picked_user: ->
         cd = Docs.findOne Session.get('current_checkin_id')
         Meteor.users.findOne cd.user_id
@@ -74,7 +96,10 @@ Template.home.helpers
                 if cd.task_ids.length>0
                     true
     user_docs: ->
-        Meteor.users.find()
+        match = {}
+        if Session.get('user_query')
+            match.username = {$regex:"#{Session.get('user_query')}", $options: 'i'}
+        Meteor.users.find(match)
     current_checkin: ->
         Docs.findOne 
             _id:Session.get('current_checkin_id')
@@ -85,7 +110,7 @@ Template.home.helpers
 
 Template.layout.events 
     'click .clear_search': -> 
-        Session.set('event_search',null)
+        Session.set('user_query',null)
         picked_tags.clear()
 Tracker.autorun ->
     current = Router.current()
