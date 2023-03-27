@@ -44,10 +44,17 @@ Template.home.events
                         alert err
                     else
                         console.log res
+                        user = Meteor.user.findOne res
                         Meteor.users.update res,
-                            $set:name:query
+                            $set:
+                                name:query
+                                checked_in:true
+                                last_checkin:Date.now()
                         Docs.update Session.get('current_checkin_id'),
-                            $set:user_id:res
+                            $set:
+                                user_id:res
+                                username:user.username
+                                name:user.name
 
     'click .complete_checkin': ->
         Docs.update Session.get('current_checkin_id'),
@@ -62,8 +69,6 @@ Template.home.events
             # displayTime: 'auto',
             position: "bottom center"
         )
-
-        
     'click .cancel_checkin': ->
         Docs.remove Session.get('current_checkin_id')
     'click .new_checkin': ->
@@ -101,7 +106,10 @@ Template.home.events
         cd = Docs.findOne Session.get('current_checkin_id')
         # if @_id is cd.user_id
         Docs.update Session.get('current_checkin_id'),
-            $set:user_id:@_id 
+            $set:
+                user_id:@_id 
+                name:@name
+                username:@username
     'click .unpick_user': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         Docs.update Session.get('current_checkin_id'),
@@ -120,10 +128,14 @@ Template.home.events
                 alert err
             else
                 console.log res
+                user = Meteor.users.findOne res
                 Meteor.users.update res,
                     $set:name:query
                 Docs.update Session.get('current_checkin_id'),
-                    $set:user_id:res
+                    $set:
+                        user_id:res
+                        username:user.username 
+                        name:user.name
 
 Template.home.helpers
     user_query: -> Session.get('user_query')
@@ -172,6 +184,10 @@ Template.home.helpers
         else 
             Docs.find
                 model:'event'
+    checkin_docs: ->
+        Docs.find {
+            model:'checkin'
+        }, sort:_timestamp:-1
 Template.layout.events 
     'click .clear_search': -> 
         Session.set('user_query',null)

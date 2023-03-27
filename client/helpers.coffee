@@ -141,8 +141,6 @@ Template.registerHelper 'current_month', () -> moment(Date.now()).format("MMMM")
 Template.registerHelper 'current_day', () -> moment(Date.now()).format("DD")
 
 
-Template.registerHelper 'current_delta', () -> Docs.findOne model:'delta'
-
 Template.registerHelper 'hsd', () ->
     Docs.findOne
         model:'home_stats'
@@ -166,11 +164,11 @@ Template.registerHelper 'total_potential_revenue', () ->
 Template.registerHelper 'session_is', (key, value)->
     Session.equals(key, value)
 
-Template.registerHelper 'key_value_is', (key, value)->
+Template.registerHelper '_is', (key, value)->
     @["#{key}"] is value
 
-Template.registerHelper 'is', (key, value)->
-    key is value
+# Template.registerHelper '_is', (key, value)->
+#     key is value
 
 Template.registerHelper 'parent_key_value_is', (key, value)->
     @["#{key}"] is value

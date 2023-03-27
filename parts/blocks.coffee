@@ -350,9 +350,9 @@ if Meteor.isClient
                     $(e.currentTarget).closest('.content').transition('fly right', 1000)
                     $(e.currentTarget).closest('tr').transition('fly right', 1000)
                     $(e.currentTarget).closest('.event').transition('fly right', 1000)
-                Meteor.setTimeout =>
-                    Docs.remove @_id
-                , 1000
+                # Meteor.setTimeout =>
+                Docs.remove @_id
+                # , 1000
 
     Template.remove_icon.events
         'click .remove_doc': (e,t)->

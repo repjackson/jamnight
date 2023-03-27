@@ -205,7 +205,28 @@ template(name='home')
                                 .ui.big.fluid.green.circular.button.complete_checkin
                                     +i name='checkmark'
                                     |complete check in
-                        
+                unless current_checkin
+                    .ui.header 
+                        +i name='clock'
+                        |#{checkin_docs.count} check ins 
+                    .ui.large.list 
+                        each checkin_docs 
+                            .item 
+                                |#{username} #{when}
+                                if _is 'checkin_type' 'musician'
+                                    if musician_type
+                                        .ui.basic.large.label
+                                            +i name='music'
+                                            |#{musician_type}
+                                            if _is 'musician_type' 'guitar'
+                                                +i name='guitar'
+                                            if _is 'musician_type' 'piano'
+                                                +i name='piano'
+                                            if _is 'musician_type' 'drums'
+                                                +i name='drum-set'
+                                if currentUser.admin_mode 
+                                    +delete_button
+                                    +print_this
                         
                 
                 
