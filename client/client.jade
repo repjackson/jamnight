@@ -106,8 +106,8 @@ template(name='layout')
     // img.ui.fluid.image.checkin_banner(src="{{c.url 'cafe'}}")
     +nav
     +yield
-    if in_dev
-        +footer
+    // if in_dev
+    +footer
 
 
 template(name='home')
@@ -123,11 +123,10 @@ template(name='home')
                         i.plus.icon
                         |new check in
                 with current_checkin
-                    a.ui.massive.basic.circular.red.image.label.cancel_checkin
-                        +i name='cancel'
-                        |cancel
+                    a.ui.massive.circular.red.icon.button.cancel_checkin
+                        i.cancel.icon
                     each event_docs 
-                        a.ui.circular.massive.image.label.pick_event(class=event_button_class) 
+                        a.ui.circular.compact.massive.button.pick_event(class=event_button_class) 
                             if current 
                                 +i name='clock'
                             |#{title}
@@ -142,9 +141,9 @@ template(name='home')
                         with picked_user
                             // .ui.inline.header picked user
                             +i name='groups' cl='ui inline image'
-                            a.ui.massive.circular.blue.image.label.unpick_user 
+                            a.ui.compact.massive.circular.blue.button.unpick_user 
                                 if image_id
-                                    img.ui.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                    img.ui.tiny.rounded.inline.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
                                 else 
                                     i.user.grey.icon
                                 if name
@@ -157,9 +156,9 @@ template(name='home')
                                     +i name='groups' cl='ui inline image'
                                     |pick user
                             each user_docs
-                                a.ui.massive.circular.image.label.pick_user(class=user_class)
+                                a.ui.massive.circular.compact.button.pick_user(class=user_class)
                                     if image_id
-                                        img.ui.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
+                                        img.ui.avatar.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
                                     else 
                                         i.user.grey.icon
                                     if name
@@ -195,16 +194,30 @@ template(name='home')
                             if kve 'checkin_type' 'volunteer'
                                 .ui.header pick tasks 
                                 each event_tasks
-                                    .ui.massive.circular.image.label.pick_task(class=task_class)
-                                        if parent_event.image_id
-                                            img.ui.rounded.image(src="{{c.url parent_event.image_id width=200 height=200 crop='fit'}}")    
-                                        |#{parent_event.title}
-                                        i.hashtag.icon 
-                                        |#{parent_event.slot_amount}
-                                        i.coins.icon
-                                        |#{parent_event.credit_bounty}
+                                    if slots_left
+                                        .ui.massive.circular.image.label.pick_task(class=task_class)
+                                            if parent_event.image_id
+                                                img.ui.rounded.image(src="{{c.url parent_event.image_id width=200 height=200 crop='fit'}}")    
+                                            |#{parent_event.title}
+                                            i.hashtag.icon 
+                                            |#{parent_event.slot_amount}
+                                            i.coins.icon
+                                            |#{parent_event.credit_bounty}
+                                    else 
+                                        .ui.massive.circular.image.disabled.label.pick_task(class=task_class)
+                                            if parent_event.image_id
+                                                img.ui.rounded.image(src="{{c.url parent_event.image_id width=200 height=200 crop='fit'}}")    
+                                            |#{parent_event.title}
+                                            i.hashtag.icon 
+                                            |#{parent_event.slot_amount}
+                                            i.coins.icon
+                                            |#{parent_event.credit_bounty}
                             if kve 'checkin_type' 'audience'
-                                .ui.header please see staff to purchase ticket
+                                .ui.button 
+                                    |use jampass 
+                                .ui.button
+                                    |purchase ticket
+                                .ui.header see staff to purchase ticket
                             .ui.hidden.divider
                             if can_complete
                                 .ui.big.fluid.green.circular.button.complete_checkin

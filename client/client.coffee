@@ -9,6 +9,7 @@ Template.home.onCreated ->
     Meteor.subscribe 'model_docs','event', ->
     Meteor.subscribe 'model_docs','checkin', ->
     Meteor.subscribe 'model_docs','task', ->
+    Meteor.subscribe 'model_docs','task_template', ->
     Meteor.subscribe 'model_docs','all_users', ->
 
 Template.home.events
@@ -204,8 +205,14 @@ Template.home.helpers
             Docs.find
                 model:'event'
     event_tasks: ->
+        cd = Docs.findOne Session.get('current_checkin_id')
         Docs.find 
+            event_id:cd.event_id
             model:'task_instance'
+    slots_left: ->
+        console.log @
+        parent_task = Docs.findOne @task_id
+        parent_task.slot_amount>0
     checkin_docs: ->
         Docs.find {
             model:'checkin'
