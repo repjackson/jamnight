@@ -432,6 +432,7 @@ template(name='event_view')
                     //     |#{target.username}
                     // .scrolling
                     |!{body}
+                    +boolean_view key='current' label='current' icon='clock'
                     // div 
                     // .spacer
                     // .spacer
@@ -514,10 +515,6 @@ template(name='event_view')
                     if currentUser
                         +voting_full
                     +array_view key='location_tags' label='location tags' icon='marker'  
-            if watson 
-                .row 
-                    .sixteen.wide.column
-                        +watson_view
 
 template(name='location_map')
     iframe(width='100%' height='350' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src="https://maps.google.com/maps?&amp;q=#{location}&amp;output=embed")
@@ -539,6 +536,7 @@ template(name='event_edit')
                     +delete_button
                     +text_edit key='title' label='title'  
                     +image_edit key='image_id' label='image'  
+                    +boolean_edit key='current' label='current' icon='clock'
                     .ui.header 
                         small author
                         |#{_author.name}

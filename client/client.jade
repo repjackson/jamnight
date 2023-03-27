@@ -19,7 +19,7 @@ head
 
     link(rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.2/dist/semantic.min.css')
     // link(href="https://fonts.googleapis.com/css?family=Varela+Round&display=swap" rel="stylesheet")
-    link(href="https://fonts.googleapis.com/css?family=Ubuntu:300,400&display=swap" rel="stylesheet")
+    // link(href="https://fonts.googleapis.com/css?family=Ubuntu:300,400&display=swap" rel="stylesheet")
     script(src='https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js')
     script(src='https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.2/dist/semantic.min.js')
     
@@ -118,70 +118,91 @@ template(name='home')
                     .ui.header 
                         +i name='music-band'                
                         |welcome to jam night
-                    .ui.fluid.large.green.basic.button.new_checkin 
+                    a.ui.fluid.large.green.basic.button.new_checkin 
                         +i name='checkmark'
                         |new check in
                 with current_checkin
-                    .ui.large.fluid.basic.circular.red.button.cancel_checkin
+                    a.ui.large.basic.circular.red.button.cancel_checkin
                         +i name='cancel'
-                        |cancel checkin
-                    unless picked_user
-                        .ui.large.fluid.big.icon.input
-                            if user_query   
-                                i.large.remove.red.link.icon.clear_search
-                            else 
-                                i.user.icon
-                            input.user_input(type='text' placeholder='search/add name' value=user_query)
-                    with picked_user
-                        .ui.inline.header picked user
-                        a.ui.big.circular.blue.button.unpick_user 
-                            img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
-                            |#{username}
-                    unless user_id
-                        .ui.inline.header 
-                            +i name='groups'
-                            |pick user
-                        each user_docs
-                            a.ui.big.circular.button.pick_user(class=user_class)
-                                img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                        |cancel
+                    
+                    each event_docs 
+                        a.ui.basic.circular.big.button.pick_event(class=event_button_class) 
+                            if current 
+                                +i name='clock'
+                            |#{title}
+                    if event_id
+                        unless picked_user
+                            .ui.large.fluid.big.icon.input
+                                if user_query   
+                                    i.large.remove.red.link.icon.clear_search
+                                else 
+                                    i.user.icon
+                                input.user_input(type='text' placeholder='search/add name' value=user_query)
+                        with picked_user
+                            .ui.inline.header picked user
+                            a.ui.big.circular.blue.button.unpick_user 
+                                if image_id
+                                    img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                else 
+                                    i.user.icon
                                 if name
                                     |#{name}
-                                else 
+                                else
                                     |#{username}
-                        .ui.button.add_user 
-                            i.plus.icon 
-                            |add #{user_query}
-                    div
-                    if user_id
-                        .ui.inline.header 
-                            // +i name='groups'
-                            |pick type
-                        +kvs key='checkin_type' value='audience' icon='audience'
-                        +kvs key='checkin_type' value='musician' icon='music'
-                        +kvs key='checkin_type' value='volunteer' icon='volunteering'
+                        unless user_id
+                            if user_docs.count
+                                .ui.center.aligned.header 
+                                    +i name='groups'
+                                    |pick user
+                            each user_docs
+                                a.ui.big.circular.button.pick_user(class=user_class)
+                                    if image_id
+                                        img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                    else 
+                                        i.user.icon
+                                    if name
+                                        |#{name}
+                                    else 
+                                        |#{username}
+                            div
+                            if user_query.length
+                                .ui.big.circular.basic.green.button.add_user 
+                                    i.user.plus.icon 
+                                    small add:
+                                    strong #{user_query}
                         div
-                        if kve 'checkin_type' 'musician'
-                            .ui.inline.header pick instrument
-                            +kvs key='musician_type' value='bass' icon='guitar-strings'
-                            +kvs key='musician_type' value='guitar' icon='guitar'
-                            +kvs key='musician_type' value='drums' icon='drum-set'
-                            +kvs key='musician_type' value='piano' icon='piano'
-                            +kvs key='musician_type' value='singer' icon='concert'
-                            +kvs key='musician_type' value='other' icon='orchestra'
-                            // .ui.header pick slot
-                        if kve 'checkin_type' 'volunteer'
-                            .ui.header pick tasks 
-                            each model_docs_helper 'task'
-                                .ui.big.circular.button.pick_task(class=task_class)
-                                    img.ui.tiny.inline.rounded.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
-                                    |#{title}
-                        if kve 'checkin_type' 'audience'
-                            .ui.header please see staff to purchase ticket
-                        .ui.hidden.divider
-                        if can_complete
-                            .ui.big.fluid.green.circular.button.complete_checkin
-                                +i name='checkmark'
-                                |complete check in
+                        if user_id
+                            .ui.center.aligned.header 
+                                // +i name='groups'
+                                |pick type
+                            +kvs key='checkin_type' value='audience' icon='audience'
+                            +kvs key='checkin_type' value='musician' icon='music'
+                            +kvs key='checkin_type' value='volunteer' icon='volunteering'
+                            div
+                            if kve 'checkin_type' 'musician'
+                                .ui.center.aligned.header pick instrument
+                                +kvs key='musician_type' value='bass' icon='guitar-strings'
+                                +kvs key='musician_type' value='guitar' icon='guitar'
+                                +kvs key='musician_type' value='drums' icon='drum-set'
+                                +kvs key='musician_type' value='piano' icon='piano'
+                                +kvs key='musician_type' value='singer' icon='concert'
+                                +kvs key='musician_type' value='other' icon='orchestra'
+                                // .ui.header pick slot
+                            if kve 'checkin_type' 'volunteer'
+                                .ui.header pick tasks 
+                                each model_docs_helper 'task'
+                                    .ui.big.circular.button.pick_task(class=task_class)
+                                        if image_id
+                                            img.ui.tiny.inline.rounded.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
+                                        |#{title}
+                            if kve 'checkin_type' 'audience'
+                                .ui.header please see staff to purchase ticket
+                            .ui.hidden.divider
+                            if can_complete
+                                .ui.big.fluid.green.circular.button.complete_checkin
+                                    +i name='checkmark'
+                                    |complete check in
                         
                         
                 

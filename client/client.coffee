@@ -5,6 +5,7 @@
 # @picked_ingredients = new ReactiveArray []
 
 Template.home.onCreated ->
+    Meteor.subscribe 'model_docs','event', ->
     Meteor.subscribe 'model_docs','checkin', ->
     Meteor.subscribe 'model_docs','task', ->
     Meteor.subscribe 'model_docs','all_users', ->
@@ -70,6 +71,12 @@ Template.home.events
             Docs.insert 
                 model:'checkin'
         Session.set('current_checkin_id',new_id)
+        current_event = Docs.findOne 
+            model:'event'
+            current:true
+        Docs.update Session.get('current_checkin_id'),
+            $set:
+                event_id:current_event._id
     'click .pick_task': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         if @_id in cd.task_ids
@@ -80,6 +87,16 @@ Template.home.events
             Docs.update Session.get('current_checkin_id'),
                 $addToSet:
                     task_ids:@_id 
+    'click .pick_event': ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        unless @_id is cd.event_id
+            Docs.update Session.get('current_checkin_id'),
+                $set:
+                    event_id:@_id 
+        else             
+            Docs.update Session.get('current_checkin_id'),
+                $unset:
+                    event_id:1 
     'click .pick_user': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         # if @_id is cd.user_id
@@ -111,6 +128,9 @@ Template.home.helpers
     picked_user: ->
         cd = Docs.findOne Session.get('current_checkin_id')
         Meteor.users.findOne cd.user_id
+    event_button_class: ->
+        cd = Docs.findOne Session.get('current_checkin_id')
+        if @_id is cd.event_id then 'blue' else 'basic compact'
     task_class: ->
         cd = Docs.findOne Session.get('current_checkin_id')
         if @_id in cd.task_ids then 'blue' else 'basic compact'
@@ -141,7 +161,9 @@ Template.home.helpers
     current_checkin: ->
         Docs.findOne 
             _id:Session.get('current_checkin_id')
-
+    event_docs: ->
+        Docs.find 
+            model:'event'
 Template.layout.events 
     'click .clear_search': -> 
         Session.set('user_query',null)
@@ -160,24 +182,6 @@ Template.footer.helpers
 
     user_docs: ->
         Meteor.users.find()
-# Template.home.onCreated ->
-#     @autorun => @subscribe 'model_docs', 'stats', ->
-# Template.home.onRendered ->
-#     Meteor.call 'log_homepage_view', ->
-#         console.log '?'
-# Template.home.helpers
-#     stats: ->
-#         Docs.findOne
-#             model:'stats'
-
-# Template.nav.onCreated ->
-#     @autorun => @subscribe 'order_count'
-#     @autorun => @subscribe 'product_count'
-#     @autorun => @subscribe 'ingredient_count'
-#     @autorun => @subscribe 'subscription_count'
-#     @autorun => @subscribe 'source_count'
-#     @autorun => @subscribe 'giftcard_count'
-#     @autorun => @subscribe 'user_count'
         
         
 Template.not_found.events
