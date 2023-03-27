@@ -14,6 +14,39 @@ Template.home.events
         search_value = $(e.currentTarget).closest('.user_input').val().trim()
         if search_value.length > 1
             Session.set('user_query',search_value)
+        if e.which is 13
+            query = Session.get('user_query')
+            slugged = query.toString().toLowerCase().replace(/\s+/g, '_').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '_').replace(/^-+/, '').replace(/-+$/,'')
+            count = Meteor.users.find({
+                $or: [
+                    {username:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                    {name:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                    ]
+                }).count()
+            if count is 1
+                found_user = Meteor.users.findOne({
+                    $or: [
+                        {username:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                        {name:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                        ]
+                    })
+                Docs.update Session.get('current_checkin_id'),
+                    $set:user_id:found_user._id
+            else if count is 0
+                options = {
+                    username:slugged
+                    password:slugged
+                    }
+                console.log options
+                Meteor.call 'create_user', options, (err,res)=>
+                    if err
+                        alert err
+                    else
+                        console.log res
+                        Meteor.users.update res,
+                            $set:name:query
+                        Docs.update Session.get('current_checkin_id'),
+                            $set:user_id:res
 
     'click .complete_checkin': ->
         Docs.update Session.get('current_checkin_id'),
@@ -96,17 +129,18 @@ Template.home.helpers
                 if cd.task_ids.length>0
                     true
     user_docs: ->
-        match = {}
+        # match = {}
         if Session.get('user_query')
-            match.username = {$regex:"#{Session.get('user_query')}", $options: 'i'}
-        Meteor.users.find(match)
+            # match.username = 
+            Meteor.users.find({
+                $or: [
+                    {username:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                    {name:$regex:"#{Session.get('user_query')}", $options: 'i'}
+                    ]
+                })
     current_checkin: ->
         Docs.findOne 
             _id:Session.get('current_checkin_id')
-    home_docs: ->
-        Docs.find 
-            model:'post'
-            home:true
 
 Template.layout.events 
     'click .clear_search': -> 

@@ -134,7 +134,7 @@ template(name='home')
                             input.user_input(type='text' placeholder='search/add name' value=user_query)
                     with picked_user
                         .ui.inline.header picked user
-                        .ui.big.circular.blue.button.unpick_user 
+                        a.ui.big.circular.blue.button.unpick_user 
                             img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
                             |#{username}
                     unless user_id
@@ -142,7 +142,7 @@ template(name='home')
                             +i name='groups'
                             |pick user
                         each user_docs
-                            .ui.big.circular.button.pick_user(class=user_class)
+                            a.ui.big.circular.button.pick_user(class=user_class)
                                 img.ui.mini.rounded.inline.image(src="{{c.url image_id width=1000 height=1000 crop='crop'}}")    
                                 if name
                                     |#{name}
