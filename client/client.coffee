@@ -4,6 +4,8 @@
 @picked_timestamp_tags = new ReactiveArray []
 # @picked_ingredients = new ReactiveArray []
 
+Template.nav.onCreated ->
+    Meteor.subscribe 'me', ->
 Template.home.onCreated ->
     Meteor.subscribe 'event_task_instances',Session.get('current_checkin_id'), ->
     Meteor.subscribe 'model_docs','event', ->

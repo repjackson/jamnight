@@ -20,19 +20,16 @@ template(name='user')
                         |#{credit} credit
                     // if credit
                     if is_current_user
-                        a.ui.circular.icon.compact.large.button(href="/user/#{current_user.username}/edit" title='user settings')
+                        a.ui.circular.compact.big.button(href="/user/#{current_user.username}/edit" title='user settings')
                             i.cog.icon
                             |edit user
                         a.ui.big.image.label.button.logout
-                            // i.sign.out.alternate.icon
-                            // i.sign.out.alternate.icon
                             +i name='exit'
                             |log out
                     else if currentUser.admin_mode
-                        a.ui.circular.icon.compact.large.button(href="/user/#{current_user.username}/edit" title='user settings')
+                        a.ui.circular.compact.big.button(href="/user/#{current_user.username}/edit" title='user settings')
                             i.shield.icon
-                            +i name='settings' cl='ui avatar image'
-                            // |edit user
+                            |edit user
                     div
                     +array_view key='tags' label='tags' icon='tags'
                     div

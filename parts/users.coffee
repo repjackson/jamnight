@@ -12,7 +12,6 @@ if Meteor.isClient
             ->
         @autorun => Meteor.subscribe 'user_tags', picked_user_tags.array(), ->
     Template.users.helpers
-        toggle_friends_class: -> if Session.get('view_friends',true) then 'blue large' else ''
         picked_user_tags: -> picked_user_tags.array()
         all_user_tags: -> Results.find model:'user_tag'
         one_result: ->
@@ -33,7 +32,6 @@ if Meteor.isClient
             ,{ limit:100 }).fetch()
 
     Template.users.events
-        'click .toggle_friends': -> Session.set('view_friends', !Session.get('view_friends'))
         'click .pick_user_tag': -> picked_user_tags.push @name
         'click .unpick_user_tag': -> picked_user_tags.remove @valueOf()
         'click .add_user': ->
@@ -68,9 +66,6 @@ if Meteor.isServer
         doc_limit
         doc_sort_key
         doc_sort_direction
-        view_delivery
-        view_pickup
-        view_open
         )->
         # console.log picked_tags
         if doc_limit
@@ -83,33 +78,10 @@ if Meteor.isServer
             sort_direction = parseInt(doc_sort_direction)
         self = @
         match = {model:'event'}
-        # if view_open
-        #     match.open = $ne:false
-        # if view_delivery
-        #     match.delivery = $ne:false
-        # if view_pickup
-        #     match.pickup = $ne:false
         if picked_tags.length > 0
             match.tags = $all: picked_tags
-            # sort = 'member_count'
         else
-            # match.tags = $nin: ['wikipedia']
             sort = '_timestamp'
-            # match.source = $ne:'wikipedia'
-        # if view_images
-        #     match.is_image = $ne:false
-        # if view_videos
-        #     match.is_video = $ne:false
-
-        # match.tags = $all: picked_tags
-        # if filter then match.model = filter
-        # keys = _.keys(prematch)
-        # for key in keys
-        #     key_array = prematch["#{key}"]
-        #     if key_array and key_array.length > 0
-        #         match["#{key}"] = $all: key_array
-            # console.log 'current facet filter array', current_facet_filter_array
-
         console.log 'group match', match
         console.log 'sort key', sort_key
         console.log 'sort direction', sort_direction
@@ -127,17 +99,16 @@ if Meteor.isServer
         if username
             match.username = {$regex:"#{username}", $options: 'i'}
         Meteor.users.find(match,{ 
-            limit:10, 
-            fields:
-                roles:1
-                username:1
-                image_id:1
-                tags:1
-                credit:1
-                first_name:1
-                last_name:1
-        }
-        )
+            limit:100 
+            # fields:
+            #     roles:1
+            #     username:1
+            #     image_id:1
+            #     tags:1
+            #     credit:1
+            #     first_name:1
+            #     last_name:1
+        })
     
     Meteor.publish 'user_tags', (picked_tags=[])->
         # user = Meteor.users.findOne @userId
@@ -162,7 +133,6 @@ if Meteor.isServer
             { $project: _id: 0, name: '$_id', count: 1 }
             ]
         cloud.forEach (tag, i) ->
-    
             self.added 'results', Random.id(),
                 name: tag.name
                 count: tag.count

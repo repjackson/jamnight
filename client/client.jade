@@ -274,9 +274,9 @@ template(name='footer')
     .ui.padded.inverted.grid.segment
         .one.column.row
             .column
-                with currentUser
-                    +print_this
-                    if currentUser.admin
+                //     +print_this
+                if currentUser.admin
+                    with currentUser
                         +boolean_edit key='admin_mode' label='admin mode'  
                 if currentUser.admin_mode
                     +call_method name='checkout_all'

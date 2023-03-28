@@ -5,10 +5,10 @@ template(name='user_edit')
             .row
                 .four.wide.column.scrollin
                     .ui.center.aligned.large.inline.grey.header
-                        | #{current_user.first_name} #{current_user.last_name}
+                        | #{name}
                     //- +i name='pencil'
-                    .ui.small.inline.header @#{current_user.username}
-                    a.ui.green.icon.large.fluid.button.fly_up(href="/user/#{current_user.username}/") 
+                    .ui.small.inline.header @#{username}
+                    a.ui.green.icon.large.fluid.button.fly_up(href="/user/#{username}/") 
                         i.checkmark.big.icon
                     .ui.hidden.divider
                     +image_edit key='image_id' icon='picture' title='user image'  
@@ -25,9 +25,12 @@ template(name='user_edit')
                         +print_this
                 .six.wide.column.scrollin
                     .ui.form
-                        +text_edit key='display_name' label='display name'  
-                        +text_edit key='first_name' label='first name'  
-                        +text_edit key='last_name' label='last name'  
+                        +text_edit key='name' label='display name'  
+                        +boolean_edit key='is_musician' label='musician' icon='music'
+                        if is_musician
+                            +boolean_edit key='is_drummer' label='drummer' icon='drum-set'
+                            +boolean_edit key='is_pianist' label='pianist' icon='piano'
+                            +boolean_edit key='is_guitarist' label='guitarist' icon='guitar'
                         div
                         // .ui.header 
                         //     i.envelope.outline.icon
@@ -207,7 +210,6 @@ template(name='emails_edit')
 //         | set password
             
             
-            
 // template(name='emails_edit')
 //     //- .ui.small.header 
 //     //-     i.envelope.icon
@@ -238,44 +240,3 @@ template(name='emails_edit')
 //         #add_email.ui.submit.compact.button 
 //             i.plus.icon
 //             |submit
-
-
-
-template(name='user_edit_friends')
-    .ui.header
-        i.users.icon
-        | friends
-    
-    
-    
-    
-
-template(name='user_edit_account')
-    .ui.header 
-        i.cog.icon
-        |account
-    .ui.two.column.stackable.grid
-        .column
-            +image_edit key='user_image_id' icon='picture' title='user image'  
-            +image_edit key='avatar_image_id' icon='picture' title='avatar image'  
-            +password_edit
-        .column
-            +text_edit key='first_name' label='first name'  
-            +text_edit key='last_name' label='last name'  
-            .ui.header 
-                i.envelope.outline.icon
-                |emails
-            +emails_edit
-            if in_dev
-                .ui.segment
-                    i.code.icon
-                    +username_edit
-                    +boolean_edit key='disabled' label='disabled'  
-                    +multi_user_edit key='user_representatives' label='user representatives'  
-                    div
-                    with current_user
-                        .ui.button.remove_user 
-                            i.remove.icon
-                            |delete user
-            .spacer
-            +phone_edit key='phone' label='phone' icon='phone'  
