@@ -8,7 +8,9 @@ Template.nav.onCreated ->
     Meteor.subscribe 'me', ->
 Template.home.onCreated ->
     Meteor.subscribe 'event_task_instances',Session.get('current_checkin_id'), ->
-    Meteor.subscribe 'model_docs','event', ->
+    # Meteor.subscribe 'model_docs','event', ->
+    Meteor.subscribe 'current_event', ->
+    
     Meteor.subscribe 'model_docs','checkin', ->
     Meteor.subscribe 'model_docs','task', ->
     Meteor.subscribe 'current_event_task_instances', ->
@@ -100,16 +102,16 @@ Template.home.events
         else 
             Docs.update Session.get('current_checkin_id'),
                 $addToSet:task_ids:@_id 
-    'click .pick_event': ->
-        cd = Docs.findOne Session.get('current_checkin_id')
-        unless @_id is cd.event_id
-            Docs.update Session.get('current_checkin_id'),
-                $set:
-                    event_id:@_id 
-        else             
-            Docs.update Session.get('current_checkin_id'),
-                $unset:
-                    event_id:1 
+    # 'click .pick_event': ->
+    #     cd = Docs.findOne Session.get('current_checkin_id')
+    #     unless @_id is cd.event_id
+    #         Docs.update Session.get('current_checkin_id'),
+    #             $set:
+    #                 event_id:@_id 
+    #     else             
+    #         Docs.update Session.get('current_checkin_id'),
+    #             $unset:
+    #                 event_id:1 
     'click .pick_user': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         # if @_id is cd.user_id
@@ -122,6 +124,9 @@ Template.home.events
                 user_id:@_id 
                 name:@name
                 username:@username
+        if @is_musician
+            Docs.update Session.get('current_checkin_id'),
+                $set:checkin_type:'musician' 
     'click .checkout': ->
         Docs.update @_id, 
             $set:
@@ -131,7 +136,7 @@ Template.home.events
             $set:
                 checked_in:false
         $('body').toast(
-            showIcon: 'checkmark'
+            showIcon: 'checkmark'   
             message: "checked out"
             showProgress: 'bottom'
             class: 'success'
@@ -174,9 +179,9 @@ Template.home.helpers
     picked_user: ->
         cd = Docs.findOne Session.get('current_checkin_id')
         Meteor.users.findOne cd.user_id
-    event_button_class: ->
-        cd = Docs.findOne Session.get('current_checkin_id')
-        if @_id is cd.event_id then 'blue' else 'basic compact'
+    # event_button_class: ->
+    #     cd = Docs.findOne Session.get('current_checkin_id')
+    #     if @_id is cd.event_id then 'blue' else 'basic compact'
     task_class: ->
         cd = Docs.findOne Session.get('current_checkin_id')
         if @_id in cd.task_ids then 'blue' else 'basic compact'
@@ -200,7 +205,7 @@ Template.home.helpers
             # match.username = 
             Meteor.users.find({
                 $and: [
-                    checked_in:$ne:true
+                    # checked_in:$ne:true
                     $or: [
                         {username:$regex:"#{Session.get('user_query')}", $options: 'i'}
                         {name:$regex:"#{Session.get('user_query')}", $options: 'i'}

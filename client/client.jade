@@ -59,8 +59,8 @@ template(name='nav')
             +icolor name='calendar'
             // img(src='/android-chrome-192x192.png')
             strong.mobile.hidden events
-        a.icon.item.invert_toggle(title='dark mode')
-            +i name='light'
+        // a.icon.item.invert_toggle(title='dark mode')
+        //     +i name='light'
         // // .icon.item 
         // //     i.large.search.icon
         // .search.item.zoomer.mobile.hidden(title='search')
@@ -95,7 +95,8 @@ template(name='nav')
 template(name='layout')
     // img.ui.fluid.image.checkin_banner(src="{{c.url 'cafe'}}")
     +nav
-    +yield
+    .global_container
+        +yield
     // if in_dev
     +footer
 
@@ -122,7 +123,7 @@ template(name='home')
                     //         |#{title}
                     if event_id
                         unless picked_user
-                            .ui.large.fluid.big.icon.input
+                            .ui.big.icon.input
                                 if user_query   
                                     i.large.remove.red.link.icon.clear_search
                                 else 
@@ -146,17 +147,21 @@ template(name='home')
                                     +i name='groups' cl='ui inline image'
                                     |pick user
                             each user_docs
-                                a.ui.big.circular.compact.button.pick_user(class=user_class)
+                                a.ui.massive.circular.compact.button.pick_user(class=user_class)
                                     if image_id
-                                        img.ui.mini.rounded.inline.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
+                                        img.ui.tiny.rounded.inline.image(src="{{c.url image_id width=300 height=300 crop='fit'}}")    
                                     else 
                                         i.user.grey.icon
                                     if name
                                         |#{name}
                                     else 
                                         |#{username}
-                                    if checked_in
-                                        i.green.clock.icon(title='checked in')
+                                    if is_musician 
+                                        span(title='is musician')
+                                            +ismall name='music'
+                                    if currentUser.admin_mode
+                                        if checked_in
+                                            i.green.clock.icon(title='checked in')
                             div
                             if user_query.length
                                 .ui.massive.circular.basic.green.button.add_user 
@@ -204,7 +209,7 @@ template(name='home')
                                             |#{parent_event.credit_bounty}
                             if kve 'checkin_type' 'audience'
                                 a.ui.massive.basic.circular.button.pick_jampass
-                                    +i name='name-tag'
+                                    +i name='employee-tag'
                                     |use jampass 
                                 a.ui.massive.basic.circular.button.pick_ticket
                                     +i name='train-ticket'
@@ -271,7 +276,7 @@ template(name='not_found')
 
 
 template(name='footer')
-    .ui.padded.inverted.grid.segment
+    .ui.padded.grid.segment
         .one.column.row
             .column
                 //     +print_this
@@ -284,7 +289,7 @@ template(name='footer')
                         i.user.icon
                         |#{user_docs.count} users 
                     each user_docs 
-                        a.ui.image.inverted.black.basic.label(href="/user/#{username}")
+                        a.ui.imagebasic.large.label(href="/user/#{username}")
                             img.ui.avatar.image.zoomer(src="{{c.url image_id width=300 height=300 crop='crop'}}")    
                             |#{username}
                             if checked_in
@@ -296,7 +301,7 @@ template(name='footer')
                         i.blog.icon
                         |#{doc_docs.count} docs 
                     each doc_docs
-                        a.ui.image.inverted.black.basic.label(href="/#{model}/#{_id}")
+                        a.ui.image.large.basic.label(href="/#{model}/#{_id}")
                             img.ui.avatar.image.zoomer(src="{{c.url image_id width=300 height=300 crop='crop'}}")    
                             if title
                                 |{{{cut title}}}...

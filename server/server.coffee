@@ -35,6 +35,10 @@ Meteor.publish 'event_task_instances', (checkin_id)->
             Docs.find 
                 model:'task_instance'
                 event_id:checkin_doc.event_id
+Meteor.publish 'current_event', ()->
+    Docs.find 
+        model:'event'
+        current:true
 Meteor.publish 'current_event_task_instances', ()->
     current_event = 
         Docs.findOne 
