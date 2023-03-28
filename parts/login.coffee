@@ -86,8 +86,6 @@ if Meteor.isClient
         @render 'register'
         ), name:'register'
 
-
-
     Template.register.onCreated ->
         Session.setDefault 'email', null
         Session.setDefault 'email_status', 'invalid'

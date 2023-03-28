@@ -77,7 +77,7 @@ template(name='nav')
                         img.ui.avatar.image(src="{{c.url currentUser.image_id width=200 height=200 gravity='face' crop='fill'}}")
                     else
                         i.user.icon
-                    strong #{currentUser.name}
+                    strong #{currentUser._name}
                     +i name='coins'
                     | #{currentUser.credit}c
             unless subs_ready

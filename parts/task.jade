@@ -1,5 +1,5 @@
 template(name='tasks')
-    .ui.stackable.padded.grid 
+    .ui.stackable.padded.grid.scrolling
         .sixteen.wide.column
             .ui.inline.header 
                 +i name='tasks'
@@ -7,13 +7,12 @@ template(name='tasks')
                 if currentUser
                     .ui.icon.button.add_task
                         i.plus.large.icon
-            .ui.compact.button.toggle_yours
-                if viewing_yours
-                    i.undo.green.icon
-                else
-                    i.circle.outline.icon
-                |yours
-
+            // .ui.compact.button.toggle_yours
+            //     if viewing_yours
+            //         i.undo.green.icon
+            //     else
+            //         i.circle.outline.icon
+            //     |yours
             each picked_tags
                 a.ui.blue.button.unpick_task_tag
                     |#{this}
@@ -23,7 +22,7 @@ template(name='tasks')
                     |#{title} 
                     // small.ui.grey.text #{count}
         .sixteen.wide.column.scrollin
-            .ui.centered.stackable.doubling.four.cards
+            .ui.centered.stackable.doubling.five.cards
                 each task_docs 
                     +task_card
                     
@@ -33,18 +32,11 @@ template(name='task_card')
         img.ui.rounded.image(src="{{c.url image_id height=200 width=400 gravity='face' crop='fill'}}" class=currentUser.invert_class)
         .content
             a.ui.header(href="/task/#{_id}") #{title}
-            if private 
-                i.large.lock.icon
-            // .ui.small.grey.header #{when}
-            // .smallscroll
             | !{body}
-            // +comments_view_small
-            // +author_info
-            // +boolean_edit key='completed' label='completed'
-            .ui.big.circular.image.label
+            .ui.basic.circular.image.label
                 +i name='coins'
-                |#{credit_bounty} credits
-            .ui.big.circular.image.label
+                |#{credit_bounty} credit bounty
+            .ui.basic.circular.image.label
                 +i name='groups'
                 |#{slot_amount} slots
         
@@ -54,31 +46,27 @@ template(name='task_view')
         .ui.stackable.padded.grid
             .row 
                 .four.wide.column
-                    a.ui.circular.fluid.basic.button(href="/tasks" title='tasks')
+                    a.ui.circular.fluid.large.compact.basic.button(href="/tasks" title='tasks')
                         i.chevron.left.icon
                         +i name='task'
                         |tasks
                     // .ui.inline.grey.header {{from_now start_datetime}}
                     
                     if can_edit
-                        a.ui.circular.basic.button.edit_task(href="/task/#{_id}/edit" title='edit')
+                        a.ui.circular.basic.large.compact.button.edit_task(href="/task/#{_id}/edit" title='edit')
                             +i name='pencil'
                             |edit task
-                    // .ui.segment
-                    //     .ui.header 
-                    //         small author
-                    //     a.ui.header(href="/user/#{_author.username}") 
-                    //         img.ui.avatar.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
-                    //         |#{_author.username}
                     .ui.list
                         .item #{views} views
                     each viewers
                         .ui.label #{username}
                     +array_view key='tags' label='tags'  
                     // +voting_full
-                    .ui.big.label
+                    .ui.basic.big.label
+                        +i name='coins'
                         |#{credit_bounty} credits
-                    .ui.big.label
+                    .ui.basic.big.label
+                        +i name='groups'
                         |#{slot_amount} slots
 
                 .eight.wide.column.scrollin
@@ -92,12 +80,10 @@ template(name='task_view')
                     .spacer
                     +comments
                 .four.wide.column
-                    // +boolean_edit key='completed' label='completed'
-                    +single_user_edit key='assigned_id' label='assigned to'
-                    .ui.fluid.green.button.submit
-                        i.checkmark.icon
-                        |submit
-
+                    .ui.header 
+                        |task instances
+                    each model_docs_helper 'task_instance'
+                        .ui.header #{_when}
 
 
 

@@ -2,13 +2,9 @@
 @Results = new Meteor.Collection 'results'
 
 Meteor.users.helpers
-    name: ->
-        if @display_name
-            "#{@display_name}"
-        else if @first_name
-            "#{@first_name} "
-            if @last_name
-                "#{@first_name} #{@last_name}"
+    _name: ->
+        if @name
+            "#{@name}"
         else
             "#{@username}"
     shortname: ->
@@ -23,7 +19,7 @@ Meteor.users.helpers
     five_tags: ->
         if @tags
             @tags[..5]
-    has_points: -> @points > 0
+    has_credits: -> @points > 0
     # is_tech_admin: ->
     #     @_id in ['vwCi2GTJgvBJN5F6c','Dw2DfanyyteLytajt','LQEJBS6gHo3ibsJFu','YFPxjXCgjhMYEPADS','RWPa8zfANCJsczDcQ']
 
@@ -31,11 +27,7 @@ Meteor.users.helpers
 Docs.helpers
     _author: -> Meteor.users.findOne @_author_id
     # cook: -> Meteor.users.findOne @cook_user_id
-    source_products: ->
-        Docs.find
-            model:'product'
-            source_id:@_id
-    when: -> moment(@_timestamp).fromNow()
+    _when: -> moment(@_timestamp).fromNow()
     seven_tags: -> if @tags then @tags[..7]
     five_tags: -> if @tags then @tags[..4]
     three_tags: -> if @tags then @tags[..2]
@@ -53,34 +45,6 @@ Docs.helpers
 
     # order_total_transaction_amount: ->
     #     @serving_purchase_price+@cook_tip
-
-
-    order: ->
-        Docs.findOne
-            model:'order'
-            _id:@order_id
-    product: ->
-        Docs.findOne
-            model:'product'
-            _id:@product_id
-
-
-
-    upvoters: ->
-        if @upvoter_ids
-            upvoters = []
-            for upvoter_id in @upvoter_ids
-                upvoter = Meteor.users.findOne upvoter_id
-                upvoters.push upvoter
-            upvoters
-    downvoters: ->
-        if @downvoter_ids
-            downvoters = []
-            for downvoter_id in @downvoter_ids
-                downvoter = Meteor.users.findOne downvoter_id
-                downvoters.push downvoter
-            downvoters
-
 
 
 Docs.before.insert (userId, doc)->
@@ -125,9 +89,6 @@ if Meteor.isServer
         api_key: Meteor.settings.cloudinary_key
         api_secret: Meteor.settings.cloudinary_secret
 
-
-
-
 # Docs.after.insert (userId, doc)->
 #     console.log doc.tags
 #     return
@@ -136,76 +97,6 @@ if Meteor.isServer
 #     doc.tag_count = doc.tags?.length
 #     # Meteor.call 'generate_authored_cloud'
 # ), fetchPrevious: true
-
-
-
-
-Meteor.methods
-    upvote: (doc)->
-        if Meteor.userId()
-            if doc.downvoter_ids and Meteor.userId() in doc.downvoter_ids
-                Docs.update doc._id,
-                    $pull: downvoter_ids:Meteor.userId()
-                    $addToSet: upvoter_ids:Meteor.userId()
-                    $inc:
-                        points:2
-                        upvotes:1
-                        downvotes:-1
-            else if doc.upvoter_ids and Meteor.userId() in doc.upvoter_ids
-                Docs.update doc._id,
-                    $pull: upvoter_ids:Meteor.userId()
-                    $inc:
-                        points:-1
-                        upvotes:-1
-            else
-                Docs.update doc._id,
-                    $addToSet: upvoter_ids:Meteor.userId()
-                    $inc:
-                        upvotes:1
-                        points:1
-            Meteor.users.update doc._author_id,
-                $inc:karma:1
-        else
-            Docs.update doc._id,
-                $inc:
-                    anon_points:1
-                    anon_upvotes:1
-            Meteor.users.update doc._author_id,
-                $inc:anon_karma:1
-
-    downvote: (doc)->
-        if Meteor.userId()
-            if doc.upvoter_ids and Meteor.userId() in doc.upvoter_ids
-                Docs.update doc._id,
-                    $pull: upvoter_ids:Meteor.userId()
-                    $addToSet: downvoter_ids:Meteor.userId()
-                    $inc:
-                        points:-2
-                        downvotes:1
-                        upvotes:-1
-            else if doc.downvoter_ids and Meteor.userId() in doc.downvoter_ids
-                Docs.update doc._id,
-                    $pull: downvoter_ids:Meteor.userId()
-                    $inc:
-                        points:1
-                        downvotes:-1
-            else
-                Docs.update doc._id,
-                    $addToSet: downvoter_ids:Meteor.userId()
-                    $inc:
-                        points:-1
-                        downvotes:1
-            Meteor.users.update doc._author_id,
-                $inc:karma:-1
-        else
-            Docs.update doc._id,
-                $inc:
-                    anon_points:-1
-                    anon_downvotes:1
-            Meteor.users.update doc._author_id,
-                $inc:anon_karma:-1
-
-
 
 
 
@@ -278,24 +169,8 @@ Router.configure
 # })
 
 
-# Router.route '/m/:model_slug', (->
-#     @render 'delta'
-#     ), name:'delta'
-Router.route '/m/:model_slug/:doc_id/edit', -> @render 'model_doc_edit'
-Router.route '/m/:model_slug/:doc_id/view', (->
-    @render 'model_doc_view'
-    ), name:'doc_view'
-# Router.route '/model/edit/:doc_id', -> @render 'model_edit'
-
-# Router.route '/user/:username', -> @render 'user'
-# Router.route '/verification_confirmation', -> @render 'verification_confirmation'
 Router.route '*', -> @render 'not_found'
 
-# Router.route '/user/:username/m/:type', -> @render 'user_layout', 'user_section'
-# Router.route '/add_resident', (->
-#     @layout 'layout'
-#     @render 'add_resident'
-#     ), name:'add_resident'
 # Router.route '/forgot_password', -> @render 'forgot_password'
 
 # # Router.route "/food/:food_id", -> @render 'food_doc'
@@ -304,8 +179,4 @@ Router.route '*', -> @render 'not_found'
 #     @render 'reset_password'
 #     ), name:'reset_password'
 
-# Router.route '/login', -> @render 'login'
-
 Router.route '/', -> @render 'home'
-# Router.route '/', -> @redirect "/"
-# Router.route '/', -> @redirect "/user/#{Meteor.user().username}"
