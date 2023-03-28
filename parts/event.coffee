@@ -24,14 +24,6 @@ if Meteor.isClient
         @layout 'layout'
         @render 'event_view'
         ), name:'event_view'
-    Router.route '/event/:doc_id/view', (->
-        @layout 'layout'
-        @render 'event_view'
-        ), name:'event_view_view'
-    Router.route '/ticket/:doc_id', (->
-        @layout 'layout'
-        @render 'ticket_view'
-        ), name:'ticket_view'
         
     Router.route '/events', (->
         @layout 'layout'
@@ -41,6 +33,7 @@ if Meteor.isClient
     Template.events.onCreated ->
         # @autorun => Meteor.subscribe 'model_docs', 'event', ->
         # @autorun => Meteor.subscribe 'event_tags',picked_tags.array(), ->
+        Session.setDefault('viewing_past',false)
         Session.setDefault('event_search',null)
         Session.setDefault('view_mode','grid')
         Session.setDefault('sort_key','start_datetime')
@@ -52,9 +45,6 @@ if Meteor.isClient
             Session.get('limit')
             Session.get('sort_key')
             Session.get('sort_direction')
-            Session.get('view_delivery')
-            Session.get('view_pickup')
-            Session.get('view_open')
 
         @autorun => @subscribe 'event_results',
             picked_tags.array()
@@ -63,76 +53,25 @@ if Meteor.isClient
             Session.get('limit')
             Session.get('sort_key')
             Session.get('sort_direction')
-            Session.get('view_delivery')
-            Session.get('view_pickup')
-            Session.get('view_open')
         
     # Router.route '/e/:doc_slug/', (->
     #     @layout 'layout'
     #     @render 'event_view'
     #     ), name:'event_view_by_slug'
         
-    Template.registerHelper 'host', () ->    
-        Meteor.users.findOne @host_id
-   
-    Template.registerHelper 'my_ticket', () ->    
-        event = Docs.findOne @_id
-        Docs.findOne
-            model:'transaction'
-            transaction_type:'ticket_purchase'
-            event_id:@_id
-            _author_id:Meteor.userId()
-   
-    # Template.registerHelper 'event_room', () ->
-    #     event = Docs.findOne @_id
-    #     Docs.findOne 
-    #         _id:event.room_id
 
-    # Template.registerHelper 'going', () ->
-    #     event = Docs.findOne @_id
-    #     event_tickets = 
-    #         Docs.find(
-    #             model:'transaction'
-    #             transaction_type:'ticket_purchase'
-    #             event_id: @_id
-    #             ).fetch()
-    #     going_user_ids = []
-    #     for ticket in event_tickets
-    #         going_user_ids.push ticket._author_id
-    #     Meteor.users.find 
-    #         _id:$in:going_user_ids
-            
-    Template.registerHelper 'going', () ->
-        event = Docs.findOne @_id
-        Meteor.users.find 
-            _id:$in:event.going_user_ids
-    Template.registerHelper 'maybe_going', () ->
-        event = Docs.findOne @_id
-        Meteor.users.find 
-            _id:$in:event.maybe_user_ids
-    Template.registerHelper 'not_going', () ->
-        event = Docs.findOne @_id
-        Meteor.users.find 
-            _id:$in:event.not_user_ids
-
-    Template.registerHelper 'event_tickets', () ->
+    Template.registerHelper 'event_checkin_docs', () ->
         Docs.find 
-            model:'transaction'
-            transaction_type:'ticket_purchase'
+            model:'checkin'
             event_id: Router.current().params.doc_id
 
 
     Template.event_view.onCreated ->
-        @autorun => @subscribe 'groups_by_event_id',Router.current().params.doc_id, ->
-        @autorun => @subscribe 'group_members',Router.current().params.doc_id, ->
         @autorun => @subscribe 'event_tasks',Router.current().params.doc_id, ->
-        @autorun => @subscribe 'related_groups',Router.current().params.doc_id, ->
-    Template.rsvp.onCreated ->
-        @autorun => @subscribe 'event_tickets',Router.current().params.doc_id, ->
 if Meteor.isServer  
-    Meteor.publish 'event_tickets', (event_id)->
+    Meteor.publish 'event_checkins', (event_id)->
         Docs.find 
-            model:'order'
+            model:'checkin'
             event_id:event_id
     Meteor.publish 'event_tasks', (event_id)->
         Docs.find 
@@ -140,20 +79,6 @@ if Meteor.isServer
             event_id:event_id
 
 if Meteor.isClient  
-    Template.rsvp.events
-        'click .buy_ticket': ->
-            alert 'hi'
-            Docs.insert 
-                model:'order'
-                ticket:true
-                event_id:@_id
-                ticket_price: @point_price
-    Template.rsvp.helpers
-        event_ticket_docs: ->
-            Docs.find
-                model:'order'
-                event_id:@_id
-
     Template.session_icon_button.helpers
         session_icon_button_class: ->
             if Session.equals(@key,@value) then 'active' else 'basic compact'
@@ -246,7 +171,6 @@ if Meteor.isClient
             Docs.find(match).count() is 2
             
         
-        room_button_class: -> if Session.equals('viewing_room_id', @_id) then 'blue' else 'basic'
         viewing_past: -> Session.get('viewing_past')
         event_docs: ->
             # console.log moment().format()
@@ -287,9 +211,6 @@ if Meteor.isServer
         doc_limit
         doc_sort_key
         doc_sort_direction
-        view_delivery
-        view_pickup
-        view_open
         )->
         # console.log picked_tags
         if doc_limit
@@ -305,12 +226,6 @@ if Meteor.isServer
         if viewing_past
             match.start_datetime = $lt:moment().subtract(1,'days').format()
             
-        # if view_open
-        #     match.open = $ne:false
-        # if view_delivery
-        #     match.delivery = $ne:false
-        # if view_pickup
-        #     match.pickup = $ne:false
         if picked_tags.length > 0
             match.tags = $all: picked_tags
             # sort = 'member_count'
@@ -319,11 +234,6 @@ if Meteor.isServer
         if event_search.length > 0
             match.title = {$regex: "#{event_search}", $options: 'i'}
     
-        # if view_images
-        #     match.is_image = $ne:false
-        # if view_videos
-        #     match.is_video = $ne:false
-
         # match.tags = $all: picked_tags
         # if filter then match.model = filter
         # keys = _.keys(prematch)
@@ -349,9 +259,6 @@ if Meteor.isServer
         doc_limit
         doc_sort_key
         doc_sort_direction
-        view_delivery
-        view_pickup
-        view_open
         )->
         # console.log 'dummy', dummy
         # console.log 'query', query
@@ -365,10 +272,6 @@ if Meteor.isServer
         if viewing_past
             match.start_datetime = $lt:moment().subtract(1,'days').format()
 
-        # if view_delivery
-        #     match.delivery = $ne:false
-        # if view_pickup
-        #     match.pickup = $ne:false
         if picked_tags.length > 0 then match.tags = $all: picked_tags
         if event_search.length > 0
             match.title = {$regex: "#{event_search}", $options: 'i'}
@@ -428,59 +331,9 @@ if Meteor.isServer
 
 
 
- if Meteor.isClient
-    Template.registerHelper 'ticket_event', () ->
-        Docs.findOne @event_id
-
-    Template.ticket_view.onCreated ->
-        @autorun => Meteor.subscribe 'event_from_ticket_id', Router.current().params.doc_id
-        @autorun => Meteor.subscribe 'author_from_doc_id', Router.current().params.doc_id
-        @autorun => Meteor.subscribe 'doc_by_id', Router.current().params.doc_id
-
-    Template.ticket_view.events
-        'click .cancel_reservation': ->
-            event = @
-            # Swal.fire({
-            #     title: "cancel reservation?"
-            #     # text: "cannot be undone"
-            #     icon: 'question'
-            #     confirmButtonText: 'confirm cancelation'
-            #     confirmButtonColor: 'red'
-            #     showCancelButton: true
-            #     cancelButtonText: 'return'
-            #     reverseButtons: true
-            # }).then((result)=>
-            #     if result.value
-            #         console.log @
-            #             Meteor.call 'remove_reservation', @_id, =>
-            #                 Swal.fire(
-            #                     position: 'top-end',
-            #                     icon: 'success',
-            #                     title: 'reservation removed',
-            #                     showConfirmButton: false,
-            #                     timer: 1500
-            #                 )
-            #                 Router.go "/event/#{event}/view"
-            #         )
-            # )_
-
-if Meteor.isServer
-    Meteor.publish 'event_from_ticket_id', (ticket_id)->
-        ticket = Docs.findOne ticket_id
-        Docs.find 
-            _id:ticket.event_id
-    Meteor.publish 'group', (ticket_id)->
-        ticket = Docs.findOne ticket_id
-        Docs.find 
-            _id:ticket.event_id
-    Meteor.methods
-        remove_reservation: (doc_id)->
-            Docs.remove doc_id
-            
 if Meteor.isClient
     Template.event_view.onCreated ->
         @autorun => Meteor.subscribe 'doc_by_id', Router.current().params.doc_id
-        @autorun => Meteor.subscribe 'doc_by_slug', Router.current().params.doc_slug
         @autorun => Meteor.subscribe 'author_by_doc_id', Router.current().params.doc_id
         # @autorun => Meteor.subscribe 'author_by_doc_slug', Router.current().params.doc_slug
 
@@ -633,7 +486,7 @@ if Meteor.isClient
                     # Session.set('topup_amount',5)
                     # Template.instance().checkout.open
                     instance.checkout.open
-                        name: 'dao'
+                        name: 'jam night'
                         # email:Meteor.user().emails[0].address
                         description: "#{@title} ticket purchase"
                         amount: Session.get('usd_paying')*100
@@ -647,15 +500,6 @@ if Meteor.isClient
                     # )
             )
     
-    Template.attendance.events
-        'click .mark_maybe': -> Meteor.call 'mark_maybe', @_id, ->
-        'click .mark_not': -> Meteor.call 'mark_not', @_id, ->
-        'click .mark_going': -> Meteor.call 'mark_going', @_id, ->
-
-    Template.event_card.events
-        'click .mark_maybe': -> Meteor.call 'mark_maybe', @_id, ->
-        'click .mark_not': -> Meteor.call 'mark_not', @_id, ->
-        'click .mark_going': -> Meteor.call 'mark_going', @_id, ->
     Template.event_view.helpers
         tickets_left: ->
             ticket_count = 
@@ -676,48 +520,6 @@ if Meteor.isClient
 #             event_id:event_id
 
 
-    Meteor.methods
-        'mark_not': (event_id)->
-            event = Docs.findOne event_id
-            if event.not_user_ids and Meteor.userId() in event.not_user_ids
-                Docs.update event_id,
-                    $pull:
-                        not_user_ids: Meteor.userId()
-            else
-                Docs.update event_id,
-                    $addToSet:
-                        not_user_ids: Meteor.userId()
-                    $pull:
-                        going_user_ids: Meteor.userId()
-                        maybe_user_ids: Meteor.userId()
-        'mark_maybe': (event_id)->
-            event = Docs.findOne event_id
-            if event.maybe_user_ids and Meteor.userId() in event.maybe_user_ids
-                Docs.update event_id,
-                    $pull:
-                        maybe_user_ids: Meteor.userId()
-            else
-                Docs.update event_id,
-                    $addToSet:
-                        maybe_user_ids: Meteor.userId()
-                    $pull:
-                        going_user_ids: Meteor.userId()
-                        not_user_ids: Meteor.userId()
-        'mark_going': (event_id)->
-            event = Docs.findOne event_id
-            if event.going_user_ids and Meteor.userId() in event.going_user_ids
-                Docs.update event_id,
-                    $pull:
-                        going_user_ids: Meteor.userId()
-            else
-                Docs.update event_id,
-                    $addToSet:
-                        going_user_ids: Meteor.userId()
-                    $pull:
-                        maybe_user_ids: Meteor.userId()
-                        not_user_ids: Meteor.userId()
-                        
-                        
 if Meteor.isClient
     Router.route '/event/:doc_id/edit', (->
         @layout 'layout'
@@ -726,136 +528,8 @@ if Meteor.isClient
 
     Template.event_edit.onCreated ->
         @autorun => Meteor.subscribe 'doc_by_id', Router.current().params.doc_id, ->
-        @autorun => Meteor.subscribe 'model_docs', 'room_reservation', ->
-    Template.event_edit.onRendered ->
-    Template.event_edit.onCreated ->
-        @autorun => Meteor.subscribe 'model_docs', 'room', ->
-    Template.event_edit.helpers
-        rooms: ->
-            Docs.find   
-                model:'room'
-
 
     Template.event_edit.events
         'click .delete_item': ->
             if confirm 'delete item?'
                 Docs.remove @_id
-
-        'click .select_room': ->
-            reservation_exists = 
-                Docs.findOne
-                    model:'room_reservation'
-                    room_id:event.room_id 
-                    date:event.date
-            console.log reservation_exists
-            unless reservation_exists            
-                Docs.update Router.current().params.doc_id,
-                    $set:
-                        room_id:@_id
-                        room_title:@title
-
-        'click .submit': ->
-            Docs.update Router.current().params.doc_id,
-                $set:published:true
-            if confirm 'confirm?'
-                Meteor.call 'send_event', @_id, =>
-                    Router.go "/event/#{@_id}/view"
-
-
-    Template.event_edit.helpers
-        reservation_exists: ->
-            event = Docs.findOne Router.current().params.doc_id
-            Docs.findOne
-                model:'room_reservation'
-                # room_id:event.room_id 
-                date:event.date
-        room_button_class: ->
-            event = Docs.findOne Router.current().params.doc_id
-            room = Docs.findOne _id:event.room_id
-            reservation_exists = 
-                Docs.findOne
-                    model:'room_reservation'
-                    # room_id:event.room_id 
-                    date:event.date
-            res = ''
-            if event.room_id is @_id
-                res += 'blue'
-            else 
-                res += 'basic'
-            if reservation_exists
-                # console.log 'res exists'
-                res += ' disabled'
-            else
-                console.log 'no res'
-            res
-    
-        room_reservations: ->
-            event = Docs.findOne Router.current().params.doc_id
-            room = Docs.findOne _id:event.room_id
-            Docs.find 
-                model:'room_reservation'
-                room_id:event.room_id 
-                date:event.date
-                
-    Template.reserve_button.helpers
-        event_room: ->
-            event = Docs.findOne Router.current().params.doc_id
-            room = Docs.findOne _id:event.room_id
-        slot_res: ->
-            event = Docs.findOne Router.current().params.doc_id
-            room = Docs.findOne _id:event.room_id
-            Docs.findOne
-                model:'room_reservation'
-                room_id:event.room_id
-                date:event.date
-                slot:@slot
-    
-    
-    Template.reserve_button.events
-        'click .cancel_res': ->
-            Swal.fire({
-                title: "confirm delete reservation?"
-                text: ""
-                icon: 'question'
-                showCancelButton: true,
-                confirmButtonText: 'confirm'
-                cancelButtonText: 'cancel'
-                reverseButtons: true
-            }).then((result)=>
-                if result.value
-                    Docs.remove @_id
-            )
-        'click .reserve_slot': ->
-            event = Docs.findOne Router.current().params.doc_id
-            room = Docs.findOne _id:event.room_id
-            Docs.insert 
-                model:'room_reservation'
-                room_id:event.room_id
-                date:event.date
-                slot:@slot
-                payment:'points'
-
-if Meteor.isServer
-    Meteor.methods
-        send_event: (event_id)->
-            event = Docs.findOne event_id
-            target = Meteor.users.findOne event.recipient_id
-            gifter = Meteor.users.findOne event._author_id
-
-            console.log 'sending event', event
-            Meteor.users.update target._id,
-                $inc:
-                    points: event.amount
-            Meteor.users.update gifter._id,
-                $inc:
-                    points: -event.amount
-            Docs.update event_id,
-                $set:
-                    submitted:true
-                    submitted_timestamp:Date.now()
-
-
-
-            Docs.update Router.current().params.doc_id,
-                $set:
-                    submitted:true

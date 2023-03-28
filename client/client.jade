@@ -45,7 +45,6 @@ template(name='nav')
         a.header.item.zoomer(href='/' class="{{isActivePath '/'}}" )
             +icolor name='music-band'
             |&nbsp;
-            |&nbsp;
             // img(src='/android-chrome-192x192.png')
             strong.mobile.hidden jam night
         a.header.item.zoomer(href='/tasks' class="{{isActivePath '/tasks'}}" )
@@ -73,21 +72,12 @@ template(name='nav')
         //         input.global_search(type='text' autocomplete="off" value=current_searchs)
         .right.menu
             if currentUser
-                // a.icon.item.add_post(title='add post')
-                //     // i.large.plus.icon
-                //     +i name='plus'
-                // a.icon.item(href="/coin" class="{{isActiveRoute 'coin'}}" title='bank')
-                //     // i.large.inbox.icon
-                //     strong #{currentUser.coins}
-                //     +i name='coins'
                 a.item(href="/user/#{currentUser.username}" class="{{isActiveRoute 'user'}}" title='user')
                     if currentUser.image_id
                         img.ui.avatar.image(src="{{c.url currentUser.image_id width=200 height=200 gravity='face' crop='fill'}}")
                     else
                         i.user.icon
                     strong #{currentUser.name}
-                    +i name='star' cl='ui avatar image'
-                    | #{currentUser.points}p
                     +i name='coins'
                     | #{currentUser.credit}c
             unless subs_ready
@@ -125,11 +115,11 @@ template(name='home')
                 with current_checkin
                     a.ui.massive.circular.red.icon.button.cancel_checkin
                         i.cancel.icon
-                    each event_docs 
-                        a.ui.circular.compact.massive.button.pick_event(class=event_button_class) 
-                            if current 
-                                +i name='clock'
-                            |#{title}
+                    // each event_docs 
+                    //     a.ui.circular.compact.massive.button.pick_event(class=event_button_class) 
+                    //         if current 
+                    //             +i name='clock'
+                    //         |#{title}
                     if event_id
                         unless picked_user
                             .ui.large.fluid.big.icon.input
@@ -156,9 +146,9 @@ template(name='home')
                                     +i name='groups' cl='ui inline image'
                                     |pick user
                             each user_docs
-                                a.ui.massive.circular.compact.button.pick_user(class=user_class)
+                                a.ui.big.circular.compact.button.pick_user(class=user_class)
                                     if image_id
-                                        img.ui.avatar.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
+                                        img.ui.mini.rounded.inline.image(src="{{c.url image_id width=200 height=200 crop='fit'}}")    
                                     else 
                                         i.user.grey.icon
                                     if name
@@ -213,9 +203,11 @@ template(name='home')
                                             i.coins.icon
                                             |#{parent_event.credit_bounty}
                             if kve 'checkin_type' 'audience'
-                                .ui.button 
+                                a.ui.massive.basic.circular.button.pick_jampass
+                                    +i name='name-tag'
                                     |use jampass 
-                                .ui.button
+                                a.ui.massive.basic.circular.button.pick_ticket
+                                    +i name='train-ticket'
                                     |purchase ticket
                                 .ui.header see staff to purchase ticket
                             .ui.hidden.divider
@@ -252,6 +244,12 @@ template(name='home')
                                             if _is 'musician_type' 'drums'
                                                 +i name='drum-set'
                                 if currentUser.admin_mode 
+                                    if active
+                                        .ui.button.checkout
+                                            |checkout
+                                    else 
+                                        .ui.large.basic.label 
+                                            |checked out {{from_now checkout_timestamp}}
                                     +delete_button
                                     +print_this
                         
@@ -276,13 +274,12 @@ template(name='footer')
     .ui.padded.inverted.grid.segment
         .one.column.row
             .column
-                if currentUser.admin_mode
-                    +print_this
                 with currentUser
                     +print_this
-                    if in_dev
+                    if currentUser.admin
                         +boolean_edit key='admin_mode' label='admin mode'  
                 if currentUser.admin_mode
+                    +call_method name='checkout_all'
                     .ui.inverted.inline.header 
                         i.user.icon
                         |#{user_docs.count} users 
@@ -290,6 +287,8 @@ template(name='footer')
                         a.ui.image.inverted.black.basic.label(href="/user/#{username}")
                             img.ui.avatar.image.zoomer(src="{{c.url image_id width=300 height=300 crop='crop'}}")    
                             |#{username}
+                            if checked_in
+                                i.green.checkmark.icon
                         if currentUser.admin_mode
                             +print_this
                     div
@@ -310,3 +309,8 @@ template(name='footer')
                         |#{result_docs.count} results 
                     each result_docs
                         .ui.inverted.basic.label #{name}: #{model}
+
+template(name='call_method')
+    .ui.button.call 
+        i.shield.icon 
+        |call #{name}

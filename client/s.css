@@ -125,7 +125,7 @@ a:hover, .button:hover{
 }
 
 .button:not(.circular) {
-  /*border-radius: 10px !important;*/
+  border-radius: 10px !important;
 }
 
 .inline {
@@ -140,7 +140,7 @@ a:hover, .button:hover{
 }
 
 .button {
-    /*margin: .2em !important;*/
+    margin: .2em !important;
 } 
 .button:hover {
   transform: scale(1.1) !important;

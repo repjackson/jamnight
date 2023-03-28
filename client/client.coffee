@@ -9,8 +9,8 @@ Template.home.onCreated ->
     Meteor.subscribe 'model_docs','event', ->
     Meteor.subscribe 'model_docs','checkin', ->
     Meteor.subscribe 'model_docs','task', ->
-    Meteor.subscribe 'model_docs','task_template', ->
-    Meteor.subscribe 'model_docs','all_users', ->
+    Meteor.subscribe 'current_event_task_instances', ->
+    Meteor.subscribe 'all_users', ->
 
 Template.home.events
     'keyup .user_input': (e,t)->
@@ -62,6 +62,7 @@ Template.home.events
         Docs.update Session.get('current_checkin_id'),
             $set:
                 complete:true 
+                active:true
         Session.set('current_checkin_id',null)
         $('body').toast(
             showIcon: 'checkmark'
@@ -71,6 +72,7 @@ Template.home.events
             # displayTime: 'auto',
             position: "bottom center"
         )
+        Session.set 'user_query', null
     'click .cancel_checkin': ->
         Docs.remove Session.get('current_checkin_id')
     'click .new_checkin': ->
@@ -118,6 +120,23 @@ Template.home.events
                 user_id:@_id 
                 name:@name
                 username:@username
+    'click .checkout': ->
+        Docs.update @_id, 
+            $set:
+                active:false 
+                checkout_timestamp:Date.now()
+        Meteor.users.update @user_id,
+            $set:
+                checked_in:false
+        $('body').toast(
+            showIcon: 'checkmark'
+            message: "checked out"
+            showProgress: 'bottom'
+            class: 'success'
+            # displayTime: 'auto',
+            position: "bottom center"
+        )
+
     'click .unpick_user': ->
         cd = Docs.findOne Session.get('current_checkin_id')
         Docs.update Session.get('current_checkin_id'),
@@ -188,7 +207,7 @@ Template.home.helpers
                 })
         else 
             Meteor.users.find({
-                checked_in:$ne:true
+                # checked_in:$ne:true
                 })
     parent_event: ->
         Docs.findOne 
@@ -206,6 +225,9 @@ Template.home.helpers
                 model:'event'
     event_tasks: ->
         cd = Docs.findOne Session.get('current_checkin_id')
+        current_event = Docs.findOne 
+            model:'event'
+            current:true
         Docs.find 
             event_id:cd.event_id
             model:'task_instance'
